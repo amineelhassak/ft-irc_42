@@ -17,7 +17,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
+#include "message.hpp"
 
 class Server
 {
@@ -39,6 +39,10 @@ class Server
 	void	welcome_msg(Client& c);
 	void	send_msg(Client& c, std::string msg);
 	void  	ft_join(std::vector<std::string> cmds, Server *server, Client *c);
+	void	ft_mode(std::vector<std::string> cmds, Server *server, Client *c);
+	void	ft_kick(std::vector<std::string> cmds, Server *server, Client *c);
+	void	ft_invite(std::vector<std::string> cmds, Server *server, Client *c);
+	void	ft_topic(std::vector<std::string> cmds, Server *server, Client *c);
 	void 	cmds(std::vector<std::string> cmds, Server *server, Client *c);
 	int		existChannel(std::string name);
 	// void 	addToChannel(Channel cl,Client *c);
