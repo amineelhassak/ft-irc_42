@@ -16,12 +16,31 @@ std::string Channel::getTopic ()
     return this->topic;
 }
 
-void Client::addToChannel(Client *c)
+
+void Channel::addToChannel(Client c)
 {
-	this->users.push_back(c);
+    users.push_back(c);
 }
 
-void Client::addToAdmin(client *c)
+void Channel::addToAdmin(Client c)
 {
-    this->admins.push_back(c);
+    admins.push_back(c);
+}
+
+int Channel::hasClient(Client &client) const {
+    for (int i = 0;i < users.size();i++) {
+        if (users[i] = &client) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+void Channel::addToChannelnon(Client &client) {
+    if (this->hasClient(client)) {
+        return;
+    }
+    this->_clients.push_back(&client);
+    client.addChannel(this);
 }

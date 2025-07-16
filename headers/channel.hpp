@@ -17,8 +17,11 @@ class Channel
         Channel(const std::string &name);
         std::string getName();
         std::string getTopic ();
-        std::addToAdmin(client *c);
-        
+        void addToAdmin(Client c);
+        void addToChannel(Client c);
+        void addToChannelnon(Client &client);
+        int hasClient(Client &client) const ;
+
 };
 
 #endif

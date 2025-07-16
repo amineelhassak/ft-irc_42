@@ -41,7 +41,7 @@ void	Server::handle_line(Client& c, std::vector<std::string> cmd)
 	// ss << line;
 	// std::string	cmd;
 	// ss >> cmd;
-	// std::cout << "line : " << line;
+;
 	if (cmd.size() == 2 && cmd[0] == "PASS")
 	{
 	std::cout << "ah ana hna "  << std::endl;
@@ -151,11 +151,12 @@ int	Server::existChannel(std::string name)
 
 
 
+
 void Server::ft_join(std::vector<std::string> cmds, Server *server, Client *c)
 {
+
     std::vector<std::string> channels = splitByComma(cmds[1]);
     std::vector<std::string> passwords = splitByComma(cmds[2]);
-
     for (size_t i = 0; i < channels.size(); ++i)
     {
         const std::string &name = channels[i];
@@ -166,13 +167,13 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client *c)
         }
 
         if (existChannel(name)) {
-            std::cout << "EXISTE" << std::endl;
+            Channel cl(name);
+			cl.addToChannelnon(*c);
         } else {
             Channel cl(name);
             this->allChannels.push_back(cl);
-	
-			cl.addToAdmin(c);
-			cl.addToChannel(c);
+			cl.addToAdmin(*c);
+			cl.addToChannel(*c);
         }
     }
 }
@@ -187,8 +188,9 @@ void Server::cmds(std::vector<std::string> cmds, Server* server, Client* c) {
     else if (keyword == "MODE") {
         std::cout << "MODE" << std::endl;
     }
-    else if (keyword == "INVITE") {
-        ft_invite(cmds,server,c);
+    else if (keyword == "INVITE")
+	{
+        // ft_invite(cmds,server,c);
     }
     else if (keyword == "KICK") {
         std::cout << "KICK" << std::endl;
@@ -209,9 +211,10 @@ void Server::cmds(std::vector<std::string> cmds, Server* server, Client* c) {
 
 void	Server::handle_buff_line(Client& c, const std::string& buff)
 {
-	// std::cout << "entred" << buff <<  std::endl;
+	
 	c.buffer += buff;
 	std::vector<std::string> cmd = split(buff);
+
 	handle_line(c,cmd);
 	cmds(cmd, this, &c);
 }

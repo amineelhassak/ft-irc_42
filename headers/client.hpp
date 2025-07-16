@@ -5,7 +5,7 @@
 #include <vector>
 #include <cstdlib>
 #include "channel.hpp"
-class Channel ;
+
 
 class Client
 {
