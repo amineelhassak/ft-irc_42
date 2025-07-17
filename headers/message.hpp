@@ -21,7 +21,7 @@
 #define ERR_ERRONEUSNICKNAME_N "432"
  
 #define ERR_NICKNAMEINUSE(target)						PREFIX "433 " + target + " :Nickname is already in use" POSTFIX
-#define ERR_NEEDMOREPARAMS(command)						PREFIX "461 " + command + " :Not enough parameters" POSTFIX
+#define ERR_NEEDMOREPARAMS(command) (PREFIX + std::string("461 ") + std::string(command) + " :Not enough parameters" + POSTFIX)
 #define ERR_UNKNOWNCOMMAND(command)						PREFIX "421 " + command + " :Unknown command" POSTFIX
 #define ERR_CHANOPRIVSNEEDED(channel)					PREFIX "482 " + channel + " :You're not channel operator" POSTFIX
 #define ERR_ERRONEUSNICKNAME(nick)						PREFIX "432 " + nick + " :Erroneus nickname" POSTFIX

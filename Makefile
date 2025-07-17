@@ -4,8 +4,8 @@ CC = c++
 
 FLAGS = -std=c++98 #-Wall -Werror -Wextra 
 
-SRC = src/main.cpp src/parse.cpp server/server.cpp server/create.cpp client/client.cpp client/Channel.cpp
-
+SRC = src/main.cpp src/parse.cpp server/server.cpp server/create.cpp client/client.cpp client/Channel.cpp \
+	server/bot.cpp
 HDR = headers/server.hpp headers/client.hpp headers/irc.hpp headers/channel.hpp
 
 OBJ = $(SRC:.cpp=.o)

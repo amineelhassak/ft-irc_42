@@ -17,6 +17,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <random>
 #include "message.hpp"
 
 class Server
@@ -46,6 +47,8 @@ class Server
 	void	ft_privmsg(std::vector<std::string> cmds, Server *server, Client *c);
 	void 	cmds(std::vector<std::string> cmds, Server *server, Client *c);
 	int		existChannel(std::string name);
+	void 	help(Client *c);
+	void 	bot (Client *c);
 	// void 	addToChannel(Channel cl,Client *c);
 	// void 	addToAdmin(Channel cl,Client *c);
 	// void	error_reply(int fd_client, const std::string& )
