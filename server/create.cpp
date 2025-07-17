@@ -684,6 +684,91 @@ void Server::ft_topic(std::vector<std::string> cmds, Server* server, Client* c) 
     }
 }
 
+// Fonction pour gérer les messages privés (PRIVMSG)
+void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client* c) {
+    // Vérifie s'il y a assez de paramètres (destinataire et message)
+    if (cmds.size() < 2) {
+        send_msg(*c, ERR_NORECIPIENT(std::string("PRIVMSG")));
+        return;
+    }
+
+    // Vérifie s'il y a un message à envoyer
+    if (cmds.size() < 3) {
+        send_msg(*c, ERR_NOTEXTTOSEND());
+        return;
+    }
+
+    std::string receivers = cmds[1];
+    // Construit le message (tous les paramètres après le destinataire)
+    std::string message;
+    for (size_t i = 2; i < cmds.size(); ++i) {
+        if (i > 2) message += " ";
+        message += cmds[i];
+    }
+    // Supprime les deux points au début si présents
+    if (message.length() > 0 && message[0] == ':') {
+        message = message.substr(1);
+    }
+    // Vérifie que le message n'est pas vide
+    if (message.empty()) {
+        send_msg(*c, ERR_NOTEXTTOSEND());
+        return;
+    }
+    // Sépare les destinataires par virgules
+    std::vector<std::string> receiverList = splitByComma(receivers);
+    // Traite chaque destinataire
+    for (size_t i = 0; i < receiverList.size(); ++i) {
+        std::string receiver = receiverList[i];
+        // Vérifie si c'est un canal (commence par # ou &)
+        if (receiver[0] == '#' || receiver[0] == '&') {
+            // Message vers un canal
+            Channel* channel = nullptr;
+            for (size_t j = 0; j < allChannels.size(); ++j) {
+                if (allChannels[j].getName() == receiver) {
+                    channel = &allChannels[j];
+                    break;
+                }
+            }
+            if (!channel) {
+                send_msg(*c, ERR_NOSUCHCHANNEL(receiver));
+                continue;
+            }
+            // Vérifie si l'utilisateur est sur le canal
+            if (!channel->hasClient(c)) {
+                send_msg(*c, ERR_CANNOTSENDTOCHAN(receiver));
+                continue;
+            }
+            // Envoie le message à tous les utilisateurs du canal
+            std::string privmsgMsg = ":" + c->get_nick() + " PRIVMSG " + receiver + " :" + message;
+            const std::vector<Client*>& users = channel->getUsers();
+            for (size_t k = 0; k < users.size(); ++k) {
+                if (users[k] != c) // N'envoie pas le message à l'expéditeur
+                    send_msg(*users[k], privmsgMsg);
+            }
+        } else {
+            // Message vers un utilisateur
+            Client* targetClient = nullptr;
+            for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); ++it) {
+                if (it->second.get_nick() == receiver) {
+                    targetClient = &(it->second);
+                    break;
+                }
+            }
+            if (!targetClient) {
+                send_msg(*c, ERR_NOSUCHNICK(receiver));
+                continue;
+            }
+            // Envoie le message privé à l'utilisateur
+            std::string privmsgMsg = ":" + c->get_nick() + " PRIVMSG " + receiver + " :" + message;
+            send_msg(*targetClient, privmsgMsg);
+            // TODO: Si l'utilisateur est away, envoyer RPL_AWAY
+            // if (targetClient->isAway()) {
+            //     send_msg(*c, RPL_AWAY(receiver, targetClient->getAwayMessage()));
+            // }
+        }
+    }
+}
+
 void Server::cmds(std::vector<std::string> cmds, Server* server, Client* c) {
 	std::string keyword = cmds[0];
     // Dispatch vers les commandes IRC principales
@@ -701,7 +786,7 @@ void Server::cmds(std::vector<std::string> cmds, Server* server, Client* c) {
         ft_kick(cmds,server,c);
     }
     else if (keyword == "PRIVMSG") {
-        std::cout << "PRIVMSG" << std::endl;
+        ft_privmsg(cmds,server,c);
     }
     else if (keyword == "TOPIC") {
         ft_topic(cmds,server,c);

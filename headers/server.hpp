@@ -43,6 +43,7 @@ class Server
 	void	ft_kick(std::vector<std::string> cmds, Server *server, Client *c);
 	void	ft_invite(std::vector<std::string> cmds, Server *server, Client *c);
 	void	ft_topic(std::vector<std::string> cmds, Server *server, Client *c);
+	void	ft_privmsg(std::vector<std::string> cmds, Server *server, Client *c);
 	void 	cmds(std::vector<std::string> cmds, Server *server, Client *c);
 	int		existChannel(std::string name);
 	// void 	addToChannel(Channel cl,Client *c);

@@ -45,6 +45,11 @@
 #define ERR_UNKNOWNMODE(nickname, channelname, mode)	(std::string(": 472 ") + nickname + " " + channelname + " " + mode + " :is not a recognised channel mode" + POSTFIX)
 #define ERR_INCORPASS(nickname)							(": 464 " + nickname + " :Password incorrect !" + POSTFIX )
 
+#define ERR_NORECIPIENT(command)						PREFIX "411 " + command + " :No recipient given" POSTFIX
+#define ERR_NOTEXTTOSEND()								PREFIX "412 :No text to send" POSTFIX
+#define ERR_CANNOTSENDTOCHAN(channel)					PREFIX "44 " + channel + " :Cannot send to channel" POSTFIX
+#define RPL_AWAY(nickname, message)						PREFIX "301 " + nickname + " : " + message + POSTFIX
+
 #define RPL_WELCOME(sender, msg)               			PREFIX "001 " + sender + " : " + msg + POSTFIX
 #define RPL_NAMREPLY(sender, channel, users)    		PREFIX "353 " + sender + " = " + channel + " :" + users + POSTFIX
 #define RPL_ENDOFNAMES(sender, channel)        			PREFIX "366 " + sender + " " + channel + " :End of /NAMES list." POSTFIX

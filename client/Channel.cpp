@@ -37,6 +37,7 @@ void Channel::addToChannel(Client* c) {
 void Channel::removeFromChannel(Client* c) {
     users.erase(std::remove(users.begin(), users.end(), c), users.end());
     admins.erase(std::remove(admins.begin(), admins.end(), c), admins.end());
+    invites.erase(c);
 }
 
 // Vérifie si un utilisateur est déjà sur le canal
