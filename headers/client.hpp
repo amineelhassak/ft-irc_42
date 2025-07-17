@@ -18,6 +18,8 @@ class Client
 	bool		has_nick;
 	bool		has_user;
 	bool		registered;
+	// hostname
+	// ipadress
 
 	public :
 	std::string buffer;

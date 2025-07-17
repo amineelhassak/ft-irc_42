@@ -172,8 +172,8 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client *c)
             send_msg(*c, "476 " + name + " :Bad Channel Mask"); // ERR_BADCHANMASK
             continue;
         }
-        // Find or create channel
-        Channel* cl = nullptr;
+        // Find or create channel (C++11 NULL)
+        Channel* cl = NULL;
         for (size_t j = 0; j < allChannels.size(); ++j) {
             if (allChannels[j].getName() == name) {
                 cl = &allChannels[j];
@@ -185,6 +185,7 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client *c)
             cl = &allChannels.back();
             cl->addToAdmin(c);
             cl->addToChannel(c);
+            send_msg(*c, RPL_JOIN(c->get_nick(), name));
         }
 		else {
 			if (cl->hasClient(c))
@@ -209,31 +210,39 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client *c)
 			}
 			// Add user to channel
 			cl->addToChannel(c);
-			send_msg(*c, ":" + c->get_nick() + " JOIN " + name);
+			send_msg(*c, RPL_JOIN(c->get_nick(), name));
 
 		}
         // Send JOIN reply
-        // // Send topic
-        // if (!cl->getTopic().empty())
-        //     send_msg(*c, "332 " + c->get_nick() + " " + name + " :" + cl->getTopic()); // RPL_TOPIC
-        // else
-        //     send_msg(*c, "331 " + c->get_nick() + " " + name + " :No topic is set"); // RPL_NOTOPIC
-        // // Send names
-        // std::string namesReply = "353 " + c->get_nick() + " = " + name + " :";
-        // const std::vector<Client*>& users = cl->getUsers();
-        // const std::vector<Client*>& admins = cl->getAdmins();
-        // for (size_t ui = 0; ui < users.size(); ++ui) {
-        //     Client* user = users[ui];
-        //     bool isOp = false;
-        //     for (size_t ai = 0; ai < admins.size(); ++ai) {
-        //         if (admins[ai] == user) { isOp = true; break; }
-        //     }
-        //     if (isOp)
-        //         namesReply += "@";
-        //     namesReply += user->get_nick() + " ";
-        // }
-        // send_msg(*c, namesReply);
-        // send_msg(*c, "366 " + c->get_nick() + " " + name + " :End of /NAMES list"); // RPL_ENDOFNAMES
+        std::string reply_join = RPL_JOINMSG(c->get_nick(), c->get_user(), name);
+        const std::vector<Client*>& reply_all = cl->getUsers();
+        for (size_t i = 0; i < reply_all.size(); i++) {
+            send_msg(*reply_all[i], reply_join);
+        }
+
+        // Send names
+        std::string namesReply;
+        const std::vector<Client*>& users = cl->getUsers();
+        const std::vector<Client*>& admins = cl->getAdmins();
+        bool isOp;
+        for (size_t ui = 0; ui < users.size(); ++ui) {
+            Client* user = users[ui];
+            isOp = false;
+            for (size_t ai = 0; ai < admins.size(); ++ai) {
+                if (admins[ai] == user) { isOp = true; break; }
+            }
+            if (isOp)
+                namesReply += "@";
+            namesReply += user->get_nick() + " ";
+        }
+        
+        // Send topic
+        send_msg(*c, RPL_NAMREPLY(c->get_nick(), name, namesReply));
+        send_msg(*c, RPL_ENDOFNAMES(c->get_nick(), name)); // RPL
+        if (!cl->getTopic().empty())
+            send_msg(*c, "332 " + c->get_nick() + " " + name + " :" + cl->getTopic()); // RPL_TOPIC
+        else
+            send_msg(*c, "331 " + c->get_nick() + " " + name + " :No topic is set"); // RPL_NOTOPIC
     }
 }
 
@@ -254,7 +263,7 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client* c) {
     }
     
     // Recherche le canal dans la liste des canaux existants
-    Channel* channel = nullptr;
+    Channel* channel = NULL;
     for (size_t i = 0; i < allChannels.size(); ++i) {
         if (allChannels[i].getName() == channelName) {
             channel = &allChannels[i];
@@ -346,7 +355,7 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client* c) {
                 std::string targetNick = cmds[3];
                 
                 // Recherche le client cible dans la liste des clients
-                Client* targetClient = nullptr;
+                Client* targetClient = NULL;
                 for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); ++it) {
                     if (it->second.get_nick() == targetNick) {
                         targetClient = &(it->second);
@@ -429,7 +438,7 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client* c) {
     }
 
     // Recherche le canal
-    Channel* channel = nullptr;
+    Channel* channel = NULL;
     for (size_t i = 0; i < allChannels.size(); ++i) {
         if (allChannels[i].getName() == channelName) {
             channel = &allChannels[i];
@@ -465,7 +474,7 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client* c) {
     }
 
     // Recherche l'utilisateur cible
-    Client* targetClient = nullptr;
+    Client* targetClient = NULL;
     for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); ++it) {
         if (it->second.get_nick() == targetNick) {
             targetClient = &(it->second);
@@ -517,7 +526,7 @@ void Server::ft_invite(std::vector<std::string> cmds, Server* server, Client* c)
     }
 
     // Recherche le canal
-    Channel* channel = nullptr;
+    Channel* channel = NULL;
     for (size_t i = 0; i < allChannels.size(); ++i) {
         if (allChannels[i].getName() == channelName) {
             channel = &allChannels[i];
@@ -526,7 +535,7 @@ void Server::ft_invite(std::vector<std::string> cmds, Server* server, Client* c)
     }
 
     // Recherche l'utilisateur cible
-    Client* targetClient = nullptr;
+    Client* targetClient = NULL;
     for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); ++it) {
         if (it->second.get_nick() == targetNick) {
             targetClient = &(it->second);
@@ -607,7 +616,7 @@ void Server::ft_topic(std::vector<std::string> cmds, Server* server, Client* c) 
     }
     
     // Recherche le canal
-    Channel* channel = nullptr;
+    Channel* channel = NULL;
     for (size_t i = 0; i < allChannels.size(); ++i) {
         if (allChannels[i].getName() == channelName) {
             channel = &allChannels[i];
@@ -722,7 +731,7 @@ void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client* c
         // Vérifie si c'est un canal (commence par # ou &)
         if (receiver[0] == '#' || receiver[0] == '&') {
             // Message vers un canal
-            Channel* channel = nullptr;
+            Channel* channel = NULL;
             for (size_t j = 0; j < allChannels.size(); ++j) {
                 if (allChannels[j].getName() == receiver) {
                     channel = &allChannels[j];
@@ -747,7 +756,7 @@ void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client* c
             }
         } else {
             // Message vers un utilisateur
-            Client* targetClient = nullptr;
+            Client* targetClient = NULL;
             for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); ++it) {
                 if (it->second.get_nick() == receiver) {
                     targetClient = &(it->second);
