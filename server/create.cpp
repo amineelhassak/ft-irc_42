@@ -155,94 +155,97 @@ int	Server::existChannel(std::string name)
 void Server::ft_join(std::vector<std::string> cmds, Server *server, Client *c)
 {
     if (cmds.size() < 2) {
-        send_msg(*c, "461 JOIN :Not enough parameters"); // ERR_NEEDMOREPARAMS
+		std::cout << "zbi" << std::endl;
+        // send_msg(*c, ERR_NEEDMOREPARAMS("JOIN"));
         return;
     }
-    std::vector<std::string> channels = splitByComma(cmds[1]);
-    std::vector<std::string> passwords;
-    if (cmds.size() > 2)
-        passwords = splitByComma(cmds[2]);
-    else
-        passwords.resize(channels.size());
 
-    for (size_t i = 0; i < channels.size(); ++i) {
-        const std::string &name = channels[i];
-        std::string key = (i < passwords.size()) ? passwords[i] : "";
-        if (name.empty() || (name[0] != '#' && name[0] != '&')) {
-            send_msg(*c, "476 " + name + " :Bad Channel Mask"); // ERR_BADCHANMASK
+    std::vector<std::string> channel_names;
+    std::vector<std::string> channel_keys;
+    // Parse channel names and keys (comma-separated)
+    std::string channels_str = cmds[1];
+    size_t pos = 0;
+    while ((pos = channels_str.find(',')) != std::string::npos) {
+        channel_names.push_back(channels_str.substr(0, pos));
+        channels_str.erase(0, pos + 1);
+    }
+    channel_names.push_back(channels_str);
+    if (cmds.size() > 2) {
+        std::string keys_str = cmds[2];
+        pos = 0;
+        while ((pos = keys_str.find(',')) != std::string::npos) {
+            channel_keys.push_back(keys_str.substr(0, pos));
+            keys_str.erase(0, pos + 1);
+        }
+        channel_keys.push_back(keys_str);
+    }
+
+    for (size_t i = 0; i < channel_names.size(); ++i) {
+        std::string channel_name = channel_names[i];
+        std::string provided_key = (i < channel_keys.size()) ? channel_keys[i] : "";
+        if (channel_name.empty() || (channel_name[0] != '#' && channel_name[0] != '&')) {
+            send_msg(*c, ERR_BADCHANMASK(channel_name));
             continue;
         }
-        // Find or create channel (C++11 NULL)
-        Channel* cl = NULL;
+        // Find or create channel
+        Channel* cl = nullptr;
         for (size_t j = 0; j < allChannels.size(); ++j) {
-            if (allChannels[j].getName() == name) {
+            if (allChannels[j].getName() == channel_name) {
                 cl = &allChannels[j];
                 break;
             }
         }
-        if (!cl) {
-            allChannels.push_back(Channel(name));
+        bool userAlreadyInChannel = false;
+        if (cl) {
+            // Check if user is already in channel
+            if (cl->hasClient(c)) {
+                send_msg(*c, ERR_USERONCHANNEL(c->get_nick(), channel_name));
+                continue;
+            }
+            // Invite-only check
+            if (cl->isInviteOnly() && !cl->isInvited(c)) {
+                send_msg(*c, ERR_INVITEONLYCHAN(c->get_nick(), channel_name));
+                continue;
+            }
+            // Key check
+            if (!cl->getKey().empty() && cl->getKey() != provided_key) {
+                send_msg(*c, ERR_BADCHANNELKEY(c->get_nick(), channel_name));
+                continue;
+            }
+            // User limit check
+            if (cl->getUserLimit() > 0 && (int)cl->userCount() >= cl->getUserLimit()) {
+                send_msg(*c, ERR_CHANNELISFULL(c->get_nick(), channel_name));
+                continue;
+            }
+            cl->addToChannel(c);
+            send_msg(*c, RPL_JOIN(c->get_nick(), channel_name));
+        } else {
+            // Create new channel
+            allChannels.push_back(Channel(channel_name));
             cl = &allChannels.back();
             cl->addToAdmin(c);
             cl->addToChannel(c);
-            send_msg(*c, RPL_JOIN(c->get_nick(), name));
+            send_msg(*c, RPL_JOIN(c->get_nick(), channel_name));
         }
-		else {
-			if (cl->hasClient(c))
-			{
-				send_msg(*c, "443 " + c->get_nick() + " " + name + " :is already on channel"); // ERR_USERONCHANNEL
-				continue;
-			}
-			// Check invite-only
-			if (cl->isInviteOnly() && !cl->isInvited(c)) {
-				send_msg(*c, "473 " + name + " :Cannot join channel (+i)"); // ERR_INVITEONLYCHAN
-				continue;
-			}
-			// Check key
-			if (!cl->getKey().empty() && cl->getKey() != key) {
-				send_msg(*c, "475 " + name + " :Cannot join channel (+k)"); // ERR_BADCHANNELKEY
-				continue;
-			}
-			// Check user limit
-			if (cl->getUserLimit() > 0 && (int)cl->userCount() >= cl->getUserLimit()) {
-				send_msg(*c, "471 " + name + " :Cannot join channel (+l)"); // ERR_CHANNELISFULL
-				continue;
-			}
-			// Add user to channel
-			cl->addToChannel(c);
-			send_msg(*c, RPL_JOIN(c->get_nick(), name));
-
-		}
-        // Send JOIN reply
-        std::string reply_join = RPL_JOINMSG(c->get_nick(), c->get_user(), name);
-        const std::vector<Client*>& reply_all = cl->getUsers();
-        for (size_t i = 0; i < reply_all.size(); i++) {
-            send_msg(*reply_all[i], reply_join);
-        }
-
+        // Send topic
+        if (!cl->getTopic().empty())
+            send_msg(*c, RPL_TOPIC(c->get_nick(), channel_name, cl->getTopic()));
+        else
+            send_msg(*c, RPL_NOTOPIC(c->get_nick(), channel_name));
         // Send names
-        std::string namesReply;
+        std::string names_list;
         const std::vector<Client*>& users = cl->getUsers();
         const std::vector<Client*>& admins = cl->getAdmins();
-        bool isOp;
-        for (size_t ui = 0; ui < users.size(); ++ui) {
-            Client* user = users[ui];
-            isOp = false;
-            for (size_t ai = 0; ai < admins.size(); ++ai) {
-                if (admins[ai] == user) { isOp = true; break; }
+        for (size_t j = 0; j < users.size(); ++j) {
+            bool isOp = false;
+            for (size_t k = 0; k < admins.size(); ++k) {
+                if (admins[k] == users[j]) { isOp = true; break; }
             }
-            if (isOp)
-                namesReply += "@";
-            namesReply += user->get_nick() + " ";
+            if (isOp) names_list += "@";
+            names_list += users[j]->get_nick() + " ";
         }
-        
-        // Send topic
-        send_msg(*c, RPL_NAMREPLY(c->get_nick(), name, namesReply));
-        send_msg(*c, RPL_ENDOFNAMES(c->get_nick(), name)); // RPL
-        if (!cl->getTopic().empty())
-            send_msg(*c, "332 " + c->get_nick() + " " + name + " :" + cl->getTopic()); // RPL_TOPIC
-        else
-            send_msg(*c, "331 " + c->get_nick() + " " + name + " :No topic is set"); // RPL_NOTOPIC
+        send_msg(*c, RPL_NAMREPLY(c->get_nick(), channel_name, names_list));
+        send_msg(*c, RPL_ENDOFNAMES(c->get_nick(), channel_name));
     }
 }
 
@@ -810,19 +813,43 @@ void Server::cmds(std::vector<std::string> cmds, Server* server, Client* c) {
 
 void	Server::handle_buff_line(Client& c, const std::string& buff)
 {
-	
-	c.buffer += buff;
-	std::vector<std::string> cmd = split(buff);
+    c.buffer += buff;
+    size_t pos;
+    while ((pos = c.buffer.find("\r\n")) != std::string::npos) {
+        std::string line = c.buffer.substr(0, pos);
+        c.buffer.erase(0, pos + 2);
 
-	// Debug: print received command
-	std::cout << "Received command: ";
-	for (size_t i = 0; i < cmd.size(); ++i) {
-		std::cout << "[" << cmd[i] << "] ";
-	}
-	std::cout << std::endl;
+        // Remove trailing whitespace
+        line.erase(line.find_last_not_of(" \t\r\n") + 1);
 
-	handle_line(c,cmd);
-	cmds(cmd, this, &c);
+        // Parse command, args, and trailing (like wd/cmd_line)
+        std::vector<std::string> cmd;
+        std::string trailing;
+        size_t colon_pos = line.find(":");
+        if (colon_pos != std::string::npos) {
+            std::string non_trailing = line.substr(0, colon_pos);
+            trailing = line.substr(colon_pos + 1);
+            std::istringstream ss(non_trailing);
+            std::string param;
+            while (ss >> param)
+                cmd.push_back(param);
+            if (!trailing.empty())
+                cmd.push_back(trailing); // Add trailing as last arg
+        } else {
+            std::istringstream ss(line);
+            std::string param;
+            while (ss >> param)
+                cmd.push_back(param);
+        }
+
+        std::cout << "Received command: ";
+        for (size_t i = 0; i < cmd.size(); ++i) {
+            std::cout << "[" << cmd[i] << "] ";
+        }
+        std::cout << std::endl;
+        handle_line(c, cmd);
+        cmds(cmd, this, &c);
+    }
 }
 
 
