@@ -712,7 +712,7 @@ void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client* c
 
 // Fonction de dispatch : appelle la bonne fonction selon la commande reçue
 void Server::cmds(std::vector<std::string> cmds, Server* server, Client* c) {
-    if (!cmds.size())
+    if (!cmds.size() || ! c->is_registered())
         return ;
     std::string keyword = cmds[0];
     // Dispatch vers les commandes IRC principales
