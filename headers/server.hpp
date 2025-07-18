@@ -35,23 +35,25 @@ class Server
 	Server(int port, std::string password);
 	~Server();
 	void    init_socket();
-	void	handle_line(Client& c, const std::vector<std::string> cmd);
+	void	auth(Client& c, const std::vector<std::string> cmd);
 	void	handle_buff_line(Client& c, const std::string& buff);
 	void	welcome_msg(Client& c);
 	void	send_msg(Client& c, std::string msg);
-	void  	ft_join(std::vector<std::string> cmds, Server *server, Client *c);
-	void	ft_mode(std::vector<std::string> cmds, Server *server, Client *c);
-	void	ft_kick(std::vector<std::string> cmds, Server *server, Client *c);
-	void	ft_invite(std::vector<std::string> cmds, Server *server, Client *c);
-	void	ft_topic(std::vector<std::string> cmds, Server *server, Client *c);
-	void	ft_privmsg(std::vector<std::string> cmds, Server *server, Client *c);
-	void 	cmds(std::vector<std::string> cmds, Server *server, Client *c);
+	void  	ft_join(std::vector<std::string> cmds, Server *server, Client &c);
+	void	ft_mode(std::vector<std::string> cmds, Server *server, Client &c);
+	void	ft_kick(std::vector<std::string> cmds, Server *server, Client &c);
+	void	ft_invite(std::vector<std::string> cmds, Server *server, Client &c);
+	void	ft_topic(std::vector<std::string> cmds, Server *server, Client &c);
+	void	ft_privmsg(std::vector<std::string> cmds, Server *server, Client &c);
+	void 	execute_cmd(Client &c, std::vector<std::string> cmdList);
 	int		existChannel(std::string name);
 	void 	help(Client *c);
-	void 	bot (Client *c);
+	void 	bot (Client *c, std::vector <std::string> cmd);
 	// void 	addToChannel(Channel cl,Client *c);
 	// void 	addToAdmin(Channel cl,Client *c);
 	// void	error_reply(int fd_client, const std::string& )
 };
+
+std::vector<std::string> splitByComma(const std::string &input);
 
 #endif
