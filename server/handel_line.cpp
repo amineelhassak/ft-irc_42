@@ -2,9 +2,14 @@
 
 void Server::auth(Client &c, std::vector<std::string> cmd)
 {
-	if (cmd.size() == 2 && cmd[0] == "PASS")
+	if (cmd[0] == "PASS")
 	{
-		std::string pass;
+		if (cmd.size() != 2)
+		{
+			send_msg(c, "461 * USER :Syntax error");
+			return;
+		}
+		std::string	pass;
 		pass = cmd[1];
 		if (pass.empty())
 		{
@@ -23,9 +28,14 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 		}
 		c.set_pass(pass);
 	}
-	else if (cmd.size() == 2 && cmd[0] == "NICK")
+	else if (cmd[0] == "NICK")
 	{
-		std::string nick;
+		if (cmd.size() != 2)
+		{
+			send_msg(c, "461 * USER :Syntax error");
+			return;
+		}
+		std::string	nick;
 		nick = cmd[1];
 		if (nick.empty())
 		{
@@ -40,8 +50,13 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 		c.set_nick(nick);
 		c.set_has_nick(true);
 	}
-	else if (cmd.size() > 3 && cmd[0] == "USER")
+	else if (cmd[0] == "USER")
 	{
+		if (cmd.size() < 5 || cmd[4].empty() || cmd[4][0] != ':')
+		{
+			send_msg(c, "461 * USER :Syntax error");
+			return;
+		}
 		std::string user = cmd[1];
 		std::string param1 = cmd[2];
 		std::string param2 = cmd[3];
@@ -52,7 +67,7 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 			if (i != cmd.size() - 1)
 				realname += " ";
 		}
-		if (realname.empty())
+		if(realname.empty())
 		{
 			send_msg(c, "461 * :need more params");
 			return;
@@ -72,7 +87,6 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 		c.set_realname(realname);
 		c.set_has_user(true);
 	}
-
 	if (c.get_has_nick() && c.get_has_user() && !c.is_registered())
 	{
 		c.set_registered(true);
@@ -88,6 +102,11 @@ void Server::execute_cmd(Client &c, std::vector<std::string> cmdList)
 
 	if (cmd == "PASS" || cmd == "USER" || cmd == "NICK")
 		auth(c, cmdList);
+	else if (!c.is_registered())
+	{
+		send_msg(c, "ur not autntified");
+		return ;
+	}
 	else if (cmd == "JOIN")
 	{
 		ft_join(cmdList, this, c);
