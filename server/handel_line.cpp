@@ -54,9 +54,8 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	}
 	else if (cmd[0] == "USER")
 	{
-		if (cmd.size() < 5 || cmd[4].empty() )
+		if (cmd.size() < 5 || cmd[4].empty() || cmd[4][0] != ':')
 		{
-			std::cout << "talta" << std::endl;
 			send_msg(c, "461 * USER :Syntax error");
 			return;
 		}
