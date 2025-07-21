@@ -20,6 +20,8 @@
 #define ERR_NOTREGISTERED_N "451"
 #define ERR_ERRONEUSNICKNAME_N "432"
  
+
+#define ERR_INVALIDBOTPARAMS(command) (PREFIX + std::string("B0T ") + std::string(command) + " :Invalid Number of Params" + POSTFIX)
 #define ERR_NICKNAMEINUSE(target)						PREFIX "433 " + target + " :Nickname is already in use" POSTFIX
 #define ERR_NEEDMOREPARAMS(command) (PREFIX + std::string("461 ") + std::string(command) + " :Not enough parameters" + POSTFIX)
 #define ERR_UNKNOWNCOMMAND(command)						PREFIX "421 " + command + " :Unknown command" POSTFIX

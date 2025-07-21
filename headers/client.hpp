@@ -41,8 +41,6 @@ class Client
 	bool		is_registered();
 	int			get_fd();
 
-
-
 };
 
 #endif

@@ -1,7 +1,6 @@
 #include "../headers/server.hpp"
 #include "../headers/client.hpp"
 
-// Fonction utilitaire pour obtenir la date/heure actuelle sous forme de chaîne
 std::string get_current_time()
 {
     char buff[100];
@@ -11,7 +10,6 @@ std::string get_current_time()
     return (std::string(buff));
 }
 
-// Envoie un message IRC formaté à un client
 void Server::send_msg(Client& c, std::string msg)
 {
     std::string message;
@@ -19,7 +17,6 @@ void Server::send_msg(Client& c, std::string msg)
     send(c.get_fd(), message.c_str(), message.length(), 0);
 }
 
-// Envoie les messages de bienvenue à un client nouvellement connecté
 void Server::welcome_msg(Client& c)
 {
     std::string nick = c.get_nick();
@@ -35,89 +32,6 @@ void Server::welcome_msg(Client& c)
     send_msg(c, "004 " + nick + " " + name + " " + version + " " + user_modes + " " + chan_modes);
 }
 
-// Gère une ligne de commande IRC reçue d'un client
-void Server::handle_line(Client& c, std::vector<std::string> cmd)
-{
-    // Vérifie et traite les commandes d'enregistrement (PASS, NICK, USER)
-    if (cmd.size() == 2 && cmd[0] == "PASS")
-    {
-        std::string pass;
-        pass = cmd[1];
-        if (pass.empty())
-        {
-            send_msg(c, "461 * PASS :Not enough parameters");
-            return;
-        }
-        if (c.is_registered())
-        {
-            send_msg(c, "462 * :You may not reregister");
-            return;
-        }
-        if (password != pass)
-        {
-            send_msg(c, "464 * :Password incorrect");
-            return;
-        }
-        c.set_pass(pass);
-    }
-    else if (cmd.size() == 2 && cmd[0] == "NICK")
-    {
-        std::string nick;
-        nick = cmd[1];
-        if (nick.empty())
-        {
-            send_msg(c, "461 * NICK :Not enough parameters");
-            return;
-        }
-        if (c.is_registered())
-        {
-            send_msg(c, "462 * :You may not reregister");
-            return;
-        }
-        c.set_nick(nick);
-        c.set_has_nick(true);
-    }
-    else if (cmd.size() > 3 && cmd[0] == "USER")
-    {
-        std::string user = cmd[1];
-        std::string param1 = cmd[2];
-        std::string param2 = cmd[3];
-        std::string realname;
-        for (size_t i = 4; i < cmd.size(); ++i)
-        {
-            realname += cmd[i];
-            if (i != cmd.size() - 1)
-                realname += " ";
-        }
-        if(realname.empty())
-        {
-            send_msg(c, "461 * :need more params");
-            return;
-        }
-        realname = realname.substr(2);
-        if (user.empty())
-        {
-            send_msg(c, "461 * USER :Not enough parameters");
-            return;
-        }
-        if (c.is_registered())
-        {
-            send_msg(c, "462 * :You may not reregister");
-            return;
-        }
-        c.set_user(user);
-        c.set_realname(realname);
-        c.set_has_user(true);
-    }
-    // Si le client a fourni nick et user, on le marque comme enregistré et on envoie le welcome
-    if (c.get_has_nick() && c.get_has_user() && !c.is_registered())
-    {
-        c.set_registered(true);
-        welcome_msg(c);
-    }
-}
-
-// Découpe une chaîne en mots (séparateur espace)
 std::vector<std::string> split(const std::string& input) {
     std::istringstream iss(input);
     std::vector<std::string> result;
@@ -159,7 +73,7 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client *c)
     std::vector<std::string> channel_keys;
     if (cmds.size() > 2) {
         channel_keys = splitByComma(cmds[2]);
-    }
+    }lilime
 
     for (size_t i = 0; i < channel_names.size(); ++i)
 	{
@@ -747,13 +661,20 @@ void Server::cmds(std::vector<std::string> cmds, Server* server, Client* c) {
 void Server::handle_buff_line(Client& c, const std::string& buff)
 {
     c.buffer += buff;
-    // Ici, on pourrait traiter plusieurs lignes à la fois si besoin
+    size_t pos;
+    while ((pos = c.buffer.find("\r\n")) != std::string::npos) {
+        std::cout << "A single chank Recieved" << std::endl;
+        std::cout << c.buffer << std::endl;
+
+        
+        //handle_line(c, cmd);
+        //cmds(cmd, this, &c);
+    }
     std::vector<std::string> cmd = split(buff);
-    handle_line(c, cmd);
-    cmds(cmd, this, &c);
+    execute_cmd(c, cmd);
+    //cmds(cmd, this, &c);
 }
 
-// Boucle principale du serveur : accepte les connexions, lit les messages, gère les événements
 void    Server::init_socket()
 {
     struct  sockaddr_in server;

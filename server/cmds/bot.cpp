@@ -1,4 +1,4 @@
-#include "../headers/server.hpp"
+#include "../../headers/server.hpp"
 
 void Server::help(Client *c)
 {
@@ -53,8 +53,21 @@ std::string generateSequence(int length) {
 }
 
 
-void Server::bot (Client *c){
-	std::string sequence = generateSequence(6);
+void Server::bot (Client *c, std::vector <std::string> cmd){
+	static std::string sequence ;
+	if (!cmd.size())
+		return ;
+	if (cmd.size() > 2)
+		send_msg(*c, ERR_INVALIDBOTPARAMS(cmd[0]));
+	if (cmd.size() == 2)
+	{
+		if (sequence == cmd[1])
+			send_msg(*c, "OHHH NIICE U WIN");
+		else 
+			send_msg(*c, "3NDK DAKIRA DYAL DBANA");
+		return ;
+	}
+	sequence = generateSequence(6);
 	send_msg(*c, "rember this sequence");
 	send_msg(*c, sequence);
 	sleep(3);
