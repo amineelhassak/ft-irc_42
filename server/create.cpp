@@ -68,38 +68,10 @@ void Server::handle_buff_line(Client& c, const std::string& buff)
     c.buffer += buff;
     size_t pos;
     while ((pos = c.buffer.find("\r\n")) != std::string::npos) {
-       std::string line = c.buffer.substr(0, pos);
-       c.buffer.erase(0, pos + 2);
-
-       // Remove trailing whitespace
-       line.erase(line.find_last_not_of(" \t\r\n") + 1);
-
-       // Parse command, args, and trailing (like wd/cmd_line)
-       std::vector<std::string> cmd;
-       std::string trailing;
-       size_t colon_pos = line.find(":");
-       if (colon_pos != std::string::npos) {
-           std::string non_trailing = line.substr(0, colon_pos);
-           trailing = line.substr(colon_pos + 1);
-           std::istringstream ss(non_trailing);
-           std::string param;
-           while (ss >> param)
-               cmd.push_back(param);
-           if (!trailing.empty())
-               cmd.push_back(trailing); // Add trailing as last arg
-       } else {
-           std::istringstream ss(line);
-           std::string param;
-           while (ss >> param)
-               cmd.push_back(param);
-       }
-
-       std::cout << "Received command: ";
-       for (size_t i = 0; i < cmd.size(); ++i) {
-           std::cout << "[" << cmd[i] << "] ";
-       }
-       std::cout << std::endl;
-       execute_cmd(c, cmd);
+        std::cout << "A single chank Recieved" << std::endl;
+        std::cout << c.buffer << std::endl;
+        //handle_line(c, cmd);
+        //cmds(cmd, this, &c);
     }
     // std::vector<std::string> cmd = split(buff);
     // execute_cmd(c, cmd);
