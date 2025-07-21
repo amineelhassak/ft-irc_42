@@ -100,6 +100,7 @@ void Server::execute_cmd(Client &c, std::vector<std::string> cmdList)
 	if (!cmdList.size())
 		return;
 	std::string cmd = cmdList[0];
+	std::cout << cmd << std::endl;
 
 	if (cmd == "PASS" || cmd == "USER" || cmd == "NICK")
 		auth(c, cmdList);

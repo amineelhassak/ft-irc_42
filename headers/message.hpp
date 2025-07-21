@@ -1,8 +1,8 @@
 #ifndef REPL_HPP
 #define REPL_HPP
 
-#define PREFIX ":IRCServer "
-#define POSTFIX "\r"
+#define PREFIX ""
+#define POSTFIX ""
 
 #define RPL_WELCOME_N "001"
 #define RPL_YOURHOST_N "002"
@@ -20,6 +20,11 @@
 #define ERR_NOTREGISTERED_N "451"
 #define ERR_ERRONEUSNICKNAME_N "432"
  
+#define RPL_NAMREPLY(sender, channel, users) PREFIX  "353 " + sender + " = " +  channel + " :" + users + POSTFIX
+#define RPL_ENDOFNAMES(sender, channel) PREFIX  "366 " + sender + " " + channel + " :End of /NAMES list."  POSTFIX
+
+#define RPL_JOINMSG(nickname, username, channelname)	(":" + nickname + "@" + username + " JOIN " + channelname + POSTFIX)
+#define RPL_JOIN(sender, channel)						":" + sender + " JOIN :" + channel + POSTFIX
 
 #define ERR_INVALIDBOTPARAMS(command) (PREFIX + std::string("B0T ") + std::string(command) + " :Invalid Number of Params" + POSTFIX)
 #define ERR_NICKNAMEINUSE(target)						PREFIX "433 " + target + " :Nickname is already in use" POSTFIX
@@ -57,8 +62,6 @@
 // #define RPL_NAMREPLY(sender, channel, users)    		PREFIX "353 " + sender + " = " + channel + " :" + users + POSTFIX
 // #define RPL_ENDOFNAMES(sender, channel)        			PREFIX "366 " + sender + " " + channel + " :End of /NAMES list." POSTFIX
 
-#define RPL_NAMREPLY(sender, channel, users) PREFIX  "353 " + sender + " = " +  channel + " :" + users + POSTFIX
-#define RPL_ENDOFNAMES(sender, channel) PREFIX  "366 " + sender + " " + channel + " :End of /NAMES list."  POSTFIX
 
 
 #define RPL_TOPIC(sender, channel, topic)				PREFIX " 332 " + sender + " " + channel + " :" + topic + POSTFIX
@@ -68,8 +71,6 @@
 #define RPL_INVITING(nickname, targnick, targchan)  	": 341 " + nickname + " " + targnick + " " + targchan + POSTFIX
 #define RPL_INVITE(sender, target, channel)				":" + sender + " INVITE " + target + " " + channel + POSTFIX
 #define RPL_INVITING(nickname, targnick, targchan) 	 	": 341 " + nickname + " " + targnick + " " + targchan + POSTFIX
-#define RPL_JOINMSG(nickname, username, channelname)	(":" + nickname + "@" + username + " JOIN " + channelname + POSTFIX)
-#define RPL_JOIN(sender, channel)						":" + sender + " JOIN :" + channel + POSTFIX
 #define RPL_CHANGEMODE(hostname, channelname, mode)		(":" + hostname + " MODE " + channelname + " " + mode + POSTFIX)
 #define RPL_UMODEIS(hostname, channelname, mode, user)	":" + hostname + " MODE " + channelname + " " + mode + " " + user + POSTFIX
 
