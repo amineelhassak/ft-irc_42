@@ -1,0 +1,12 @@
+:Guest4587!~a@197.230.30.146 JOIN #a
+:silver.libera.chat 353 Guest4587 = #a :Guest4587 bg @ChanServ
+:silver.libera.chat 366 Guest4587 #a :End of /NAMES list.
+
+#define RPL_NAMREPLY(sender, channel, users)    		PREFIX "353 " + sender + " = " + channel + " :" + users + POSTFIX
+#define RPL_ENDOFNAMES(sender, channel)        			PREFIX "366 " + sender + " " + channel + " :End of /NAMES list." POSTFIX
+
+
+
+
+
+:silver.libera.chat 421 Guest4587 v :Unknown command

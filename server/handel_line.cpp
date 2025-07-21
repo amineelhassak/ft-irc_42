@@ -6,6 +6,7 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	{
 		if (cmd.size() != 2)
 		{
+			std::cout << "lowla" << std::endl;
 			send_msg(c, "461 * USER :Syntax error");
 			return;
 		}
@@ -32,6 +33,7 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	{
 		if (cmd.size() != 2)
 		{
+			std::cout << "tanya" << std::endl;
 			send_msg(c, "461 * USER :Syntax error");
 			return;
 		}
@@ -52,8 +54,9 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	}
 	else if (cmd[0] == "USER")
 	{
-		if (cmd.size() < 5 || cmd[4].empty() || cmd[4][0] != ':')
+		if (cmd.size() < 5 || cmd[4].empty() )
 		{
+			std::cout << "talta" << std::endl;
 			send_msg(c, "461 * USER :Syntax error");
 			return;
 		}
