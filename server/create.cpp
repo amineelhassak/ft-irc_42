@@ -73,8 +73,8 @@ void Server::handle_buff_line(Client& c, const std::string& buff)
         //handle_line(c, cmd);
         //cmds(cmd, this, &c);
     }
-    std::vector<std::string> cmd = split(buff);
-    execute_cmd(c, cmd);
+    // std::vector<std::string> cmd = split(buff);
+    // execute_cmd(c, cmd);
     //cmds(cmd, this, &c);
 }
 
