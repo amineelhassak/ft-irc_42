@@ -61,8 +61,8 @@ void Server::handle_buff_line(Client& c, const std::string& buff)
 	c.buffer += buff;
 	size_t pos;
 	while ((pos = c.buffer.find("\r\n")) != std::string::npos) {
-		std::cout << "A single chank Recieved" << std::endl;
-		std::cout << c.buffer << std::endl;
+		std::string line = c.buffer.substr(0, pos);
+       c.buffer.erase(0, pos + 2);
 	}
 	std::vector<std::string> cmd = split(buff);
 	execute_cmd(c, cmd);
