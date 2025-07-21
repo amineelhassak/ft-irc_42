@@ -3,171 +3,155 @@
 
 std::string get_current_time()
 {
-    char buff[100];
-    std::time_t now = std::time(NULL);
-    std::tm* time_info = std::localtime(&now);
-    std::strftime(buff, sizeof(buff), "%a %b %d %Y %H:%M:%S", time_info);
-    return (std::string(buff));
+	char buff[100];
+	std::time_t now = std::time(NULL);
+	std::tm* time_info = std::localtime(&now);
+	std::strftime(buff, sizeof(buff), "%a %b %d %Y %H:%M:%S", time_info);
+	return (std::string(buff));
 }
 
 void Server::send_msg(Client& c, std::string msg)
 {
-    std::string message;
-    message = ":" + this->name + " " + msg + "\r\n";
-    send(c.get_fd(), message.c_str(), message.length(), 0);
+	std::string message;
+	message = ":" + this->name + " " + msg + "\r\n";
+	send(c.get_fd(), message.c_str(), message.length(), 0);
 }
 
 void Server::welcome_msg(Client& c)
 {
-    std::string nick = c.get_nick();
-    std::string user = c.get_user();
-    std::string name = this->name;
-    std::string version = "1.0";
-    std::string date = get_current_time();
-    std::string user_modes = "i";
-    std::string chan_modes = "it";
-    send_msg(c, "001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + name);
-    send_msg(c, "002 " + nick + " :Your host is " + name + ", running version " + version);
-    send_msg(c, "003 " + nick + " :This server was created " + date);
-    send_msg(c, "004 " + nick + " " + name + " " + version + " " + user_modes + " " + chan_modes);
+	std::string nick = c.get_nick();
+	std::string user = c.get_user();
+	std::string name = this->name;
+	std::string version = "1.0";
+	std::string date = get_current_time();
+	std::string user_modes = "i";
+	std::string chan_modes = "it";
+	send_msg(c, "001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + name);
+	send_msg(c, "002 " + nick + " :Your host is " + name + ", running version " + version);
+	send_msg(c, "003 " + nick + " :This server was created " + date);
+	send_msg(c, "004 " + nick + " " + name + " " + version + " " + user_modes + " " + chan_modes);
 }
 
 std::vector<std::string> split(const std::string& input) {
-    std::istringstream iss(input);
-    std::vector<std::string> result;
-    std::string word;
-    while (iss >> word)
-        result.push_back(word);
-    return result;
+	std::istringstream iss(input);
+	std::vector<std::string> result;
+	std::string word;
+	while (iss >> word)
+		result.push_back(word);
+	return result;
 }
 
-// Découpe une chaîne en sous-chaînes séparées par des virgules
 std::vector<std::string> splitByComma(const std::string &input) {
-    std::vector<std::string> tokens;
-    std::stringstream ss(input);
-    std::string token;
-    while (std::getline(ss, token, ',')) {
-        tokens.push_back(token);
-    }
-    return tokens;
+	std::vector<std::string> tokens;
+	std::stringstream ss(input);
+	std::string token;
+	while (std::getline(ss, token, ',')) {
+		tokens.push_back(token);
+	}
+	return tokens;
 }
 
-// Vérifie si un channel existe (actuellement toujours faux)
 int Server::existChannel(std::string name)
 {
-    // À compléter si besoin
-    return 0;
+	return 0;
 }
 
-
-
-
-// Gère le buffer reçu d'un client : concatène, découpe et traite chaque ligne complète
 void Server::handle_buff_line(Client& c, const std::string& buff)
 {
-    c.buffer += buff;
-    size_t pos;
-    while ((pos = c.buffer.find("\r\n")) != std::string::npos) {
-        std::cout << "A single chank Recieved" << std::endl;
-        std::cout << c.buffer << std::endl;
-        //handle_line(c, cmd);
-        //cmds(cmd, this, &c);
-    }
-    // std::vector<std::string> cmd = split(buff);
-    // execute_cmd(c, cmd);
-    //cmds(cmd, this, &c);
+	c.buffer += buff;
+	size_t pos;
+	while ((pos = c.buffer.find("\r\n")) != std::string::npos) {
+		std::cout << "A single chank Recieved" << std::endl;
+		std::cout << c.buffer << std::endl;
+	}
+	std::vector<std::string> cmd = split(buff);
+	execute_cmd(c, cmd);
 }
 
 void    Server::init_socket()
 {
-    struct  sockaddr_in server;
-    // Création de la socket principale
-    this->socket_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (this->socket_fd == -1)
-    {
-        std::cerr << "socket failed!" << std::endl;
-        exit(1);
-    }
-    server.sin_family = AF_INET;
-    server.sin_port = htons(port);
-    server.sin_addr.s_addr = INADDR_ANY;
-    // Bind la socket sur le port
-    if (bind(this->socket_fd, (struct sockaddr*)&server, sizeof(server)) != 0)
-    {
-        std::cerr << "bind failed!" << std::endl;
-        exit(1);
-    }
-    // Met la socket en écoute
-    if (listen(this->socket_fd, SOMAXCONN) != 0)
-    {
-        std::cerr << "listen failed!" << std::endl;
-        exit(1);
-    }
-    struct pollfd listener;
-    listener.fd = socket_fd;
-    listener.events = POLLIN;
-    poll_fds.push_back(listener);
-    // Boucle principale : attend des événements sur les sockets
-    while (true)
-    {
-        int res;
-        res = poll(poll_fds.data(), poll_fds.size(), -1);
-        if (res > 0)
-        {
-            // Nouveau client ?
-            if (poll_fds[0].revents & POLLIN)
-            {
-                int fd_client;
-                fd_client = accept(socket_fd, NULL, NULL);
-                if (fd_client < 0)
-                {
-                    std::cerr << "accept failed!" << std::endl;
-                    continue;
-                }
-                else
-                {
-                    clients[fd_client] = Client(fd_client);
-                    pollfd  new_client;
-                    new_client.fd = fd_client;
-                    new_client.events = POLLIN;
-                    poll_fds.push_back(new_client); // le nouveau client vient d'être ajouté
-                    std::cout << "A new client just connected!" << std::endl;
-                }
-            }
-            // Parcours tous les clients connectés
-            for (long unsigned int i = 1; i < poll_fds.size(); ++i)
-            {
-                if (poll_fds[i].revents & POLLIN)
-                {
-                    char buff[512];
-                    ssize_t read_size;
-                    read_size = recv(poll_fds[i].fd, buff, sizeof(buff), 0);
-                    if (read_size <= 0)
-                    {
-                        close(poll_fds[i].fd);
-                        poll_fds.erase(poll_fds.begin() + i);
-                        --i;
-                        continue;
-                    }
-                    buff[read_size] = '\0';
-                    // Appelle la fonction de gestion du buffer pour ce client
-                    handle_buff_line(clients[poll_fds[i].fd], buff);
-                }
-                else if (poll_fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
-                {
-                    if (poll_fds[i].revents & POLLHUP)
-                        std::cerr << "client disconnected (POLLHUP)!" << std::endl;
-                    if (poll_fds[i].revents & POLLERR)
-                        std::cerr << "client socket error (POLLERR)!" << std::endl;
-                    if (poll_fds[i].revents & POLLNVAL)
-                        std::cerr << "client invalid fd (POLLNVAL)!" << std::endl;
-                    close(poll_fds[i].fd);
-                    poll_fds.erase(poll_fds.begin() + i);
-                    --i;
-                    continue;
-                }
-            }
-        }
-    }
+	struct  sockaddr_in server;
+	this->socket_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (this->socket_fd == -1)
+	{
+		std::cerr << "socket failed!" << std::endl;
+		exit(1);
+	}
+	server.sin_family = AF_INET;
+	server.sin_port = htons(port);
+	server.sin_addr.s_addr = INADDR_ANY;
+	if (bind(this->socket_fd, (struct sockaddr*)&server, sizeof(server)) != 0)
+	{
+		std::cerr << "bind failed!" << std::endl;
+		exit(1);
+	}
+	std::cout << "Welcom To Our Server" << std::endl;
+	if (listen(this->socket_fd, SOMAXCONN) != 0)
+	{
+		std::cerr << "listen failed!" << std::endl;
+		exit(1);
+	}
+	struct pollfd listener;
+	listener.fd = socket_fd;
+	listener.events = POLLIN;
+	poll_fds.push_back(listener);
+	while (true)
+	{
+		int res;
+		res = poll(poll_fds.data(), poll_fds.size(), -1);
+		if (res > 0)
+		{
+			if (poll_fds[0].revents & POLLIN)
+			{
+				int fd_client;
+				fd_client = accept(socket_fd, NULL, NULL);
+				if (fd_client < 0)
+				{
+					std::cerr << "accept failed!" << std::endl;
+					continue;
+				}
+				else
+				{
+					clients[fd_client] = Client(fd_client);
+					pollfd  new_client;
+					new_client.fd = fd_client;
+					new_client.events = POLLIN;
+					poll_fds.push_back(new_client);
+					std::cout << "A new client just connected!" << std::endl;
+				}
+			}
+			for (long unsigned int i = 1; i < poll_fds.size(); ++i)
+			{
+				if (poll_fds[i].revents & POLLIN)
+				{
+					char buff[512];
+					ssize_t read_size;
+					read_size = recv(poll_fds[i].fd, buff, sizeof(buff), 0);
+					if (read_size <= 0)
+					{
+						close(poll_fds[i].fd);
+						poll_fds.erase(poll_fds.begin() + i);
+						--i;
+						continue;
+					}
+					buff[read_size] = '\0';
+					handle_buff_line(clients[poll_fds[i].fd], buff);
+				}
+				else if (poll_fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+				{
+					if (poll_fds[i].revents & POLLHUP)
+						std::cerr << "client disconnected (POLLHUP)!" << std::endl;
+					if (poll_fds[i].revents & POLLERR)
+						std::cerr << "client socket error (POLLERR)!" << std::endl;
+					if (poll_fds[i].revents & POLLNVAL)
+						std::cerr << "client invalid fd (POLLNVAL)!" << std::endl;
+					close(poll_fds[i].fd);
+					poll_fds.erase(poll_fds.begin() + i);
+					--i;
+					continue;
+				}
+			}
+		}
+	}
 }
 
