@@ -2,7 +2,7 @@
 #define REPL_HPP
 
 #define PREFIX ":IRCServer "
-#define POSTFIX "\r\n"
+#define POSTFIX "\r"
 
 #define RPL_WELCOME_N "001"
 #define RPL_YOURHOST_N "002"

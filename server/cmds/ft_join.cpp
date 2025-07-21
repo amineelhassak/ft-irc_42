@@ -24,7 +24,7 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
     		provided_key = "";
 
         if (channel_name.empty() || (channel_name[0] != '#' && channel_name[0] != '&')) {
-            std::cout << "lowlaj"
+            std::cout << "lowlaj" << std::endl;
             send_msg(c, ERR_BADCHANMASK(channel_name));
             continue;
         }
@@ -40,18 +40,22 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
         bool userAlreadyInChannel = false;
         if (cl) {
             if (cl->hasClient(&c)) {
+                std::cout << "lowlaj1" << std::endl;
                 send_msg(c, ERR_USERONCHANNEL(c.get_nick(), channel_name));
                 continue;
             }
             if (cl->isInviteOnly() && !cl->isInvited(&c)) {
+                std::cout << "lowlaj2" << std::endl;
                 send_msg(c, ERR_INVITEONLYCHAN(c.get_nick(), channel_name));
                 continue;
             }
             if (!cl->getKey().empty() && cl->getKey() != provided_key) {
+                std::cout << "lowlaj3" << std::endl;
                 send_msg(c, ERR_BADCHANNELKEY(c.get_nick(), channel_name));
                 continue;
             }
             if (cl->getUserLimit() > 0 && (int)cl->userCount() >= cl->getUserLimit()) {
+                std::cout << "lowlaj4" << std::endl;
                 send_msg(c, ERR_CHANNELISFULL(c.get_nick(), channel_name));
                 continue;
             }
@@ -80,7 +84,6 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
             names_list += users[j]->get_nick() + " ";
         }
         std::cout << "User joined" << std::endl;
-        send_msg(c, RPL_JOIN( c.get_nick(), channel_name));
         send_msg(c, RPL_NAMREPLY(c.get_nick(), channel_name, names_list));
         send_msg(c, RPL_ENDOFNAMES(c.get_nick(), channel_name));
     }
