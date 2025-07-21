@@ -70,8 +70,6 @@ void Server::handle_buff_line(Client& c, const std::string& buff)
     while ((pos = c.buffer.find("\r\n")) != std::string::npos) {
         std::cout << "A single chank Recieved" << std::endl;
         std::cout << c.buffer << std::endl;
-
-        
         //handle_line(c, cmd);
         //cmds(cmd, this, &c);
     }
