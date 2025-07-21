@@ -6,7 +6,6 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	{
 		if (cmd.size() != 2)
 		{
-			std::cout << "lowla" << std::endl;
 			send_msg(c, "461 * USER :Syntax error");
 			return;
 		}
