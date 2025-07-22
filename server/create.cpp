@@ -60,7 +60,9 @@ int Server::existChannel(std::string name)
 }
 
 // Commande JOIN : permet à un client de rejoindre un ou plusieurs channels
-void Server::ft_join(std::vector<std::string> cmds, Server *server, Client *c)
+void Server::ft_join(std::vector<std::string> cmds, Server *server, Client *
+
+c)
 {
     // Vérifie qu'il y a assez de paramètres
     if (cmds.size() < 2) {
@@ -665,13 +667,11 @@ void Server::handle_buff_line(Client& c, const std::string& buff)
     while ((pos = c.buffer.find("\r\n")) != std::string::npos) {
         std::cout << "A single chank Recieved" << std::endl;
         std::cout << c.buffer << std::endl;
-
-        
         //handle_line(c, cmd);
         //cmds(cmd, this, &c);
     }
-    std::vector<std::string> cmd = split(buff);
-    execute_cmd(c, cmd);
+    // std::vector<std::string> cmd = split(buff);
+    // execute_cmd(c, cmd);
     //cmds(cmd, this, &c);
 }
 

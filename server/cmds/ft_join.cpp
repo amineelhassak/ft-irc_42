@@ -3,34 +3,35 @@
 
 void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
 {
-    if (cmds.size() < 2) {
-         send_msg(c, ERR_NEEDMOREPARAMS("JOIN"));
-        return;
-    }
+	if (cmds.size() < 2) {
+		 send_msg(c, ERR_NEEDMOREPARAMS("JOIN"));
+		return;
+	}
 
-    std::vector<std::string> channel_names = splitByComma(cmds[1]);
-    std::vector<std::string> channel_keys;
-    if (cmds.size() > 2) {
-        channel_keys = splitByComma(cmds[2]);
-    }
+	std::vector<std::string> channel_names = splitByComma(cmds[1]);
+	std::vector<std::string> channel_keys;
+	if (cmds.size() > 2) {
+		channel_keys = splitByComma(cmds[2]);
+	}
 
-    for (size_t i = 0; i < channel_names.size(); ++i)
+	for (size_t i = 0; i < channel_names.size(); ++i)
 	{
-        std::string channel_name = channel_names[i];
-        std::string provided_key;
+		std::string channel_name = channel_names[i];
+		std::string provided_key;
 		if (i < channel_keys.size())
-    		provided_key = channel_keys[i];
+			provided_key = channel_keys[i];
 		else
-    		provided_key = "";
+			provided_key = "";
 
         if (channel_name.empty() || (channel_name[0] != '#' && channel_name[0] != '&')) {
+            std::cout << "lowlaj";
             send_msg(c, ERR_BADCHANMASK(channel_name));
             continue;
         }
         Channel* cl = nullptr;
         for (size_t j = 0; j < allChannels.size(); ++j)
 		{
-            if (allChannels[j].getName() == channel_name)
+			if (allChannels[j].getName() == channel_name)
 			{
                 cl = &allChannels[j];
                 break;
@@ -78,6 +79,8 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
             if (isOp) names_list += "@";
             names_list += users[j]->get_nick() + " ";
         }
+        std::cout << "User joined" << std::endl;
+        send_msg(c, RPL_JOIN( c.get_nick(), channel_name));
         send_msg(c, RPL_NAMREPLY(c.get_nick(), channel_name, names_list));
         send_msg(c, RPL_ENDOFNAMES(c.get_nick(), channel_name));
     }
