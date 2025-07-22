@@ -2,11 +2,11 @@
 
 void Server::auth(Client &c, std::vector<std::string> cmd)
 {
+	// std::cout << cmd << std::endl;
 	if (cmd[0] == "PASS")
 	{
 		if (cmd.size() != 2)
 		{
-			std::cout << "lowla" << std::endl;
 			send_msg(c, "461 * USER :Syntax error");
 			return;
 		}
@@ -54,9 +54,8 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	}
 	else if (cmd[0] == "USER")
 	{
-		if (cmd.size() < 5 || cmd[4].empty() )
+		if (cmd.size() < 5 || cmd[4].empty() || cmd[4][0] != ':')
 		{
-			std::cout << "talta" << std::endl;
 			send_msg(c, "461 * USER :Syntax error");
 			return;
 		}
@@ -97,11 +96,26 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	}
 }
 
+
+std::string up(std::string in)
+{
+    std::string out(in.size(), ' ');
+    for (int i = 0; i < in.size(); i++)
+    {
+        out[i] = toupper(in[i]);
+    }
+    return out;
+}
+
 void Server::execute_cmd(Client &c, std::vector<std::string> cmdList)
 {
 	if (!cmdList.size())
 		return;
 	std::string cmd = cmdList[0];
+	// std::cout << cmd << std::endl;
+	cmd = up(cmd);
+	cmdList[0] = up(cmdList[0]);
+	// std::cout << cmd << std::endl;
 
 	if (cmd == "PASS" || cmd == "USER" || cmd == "NICK")
 		auth(c, cmdList);
