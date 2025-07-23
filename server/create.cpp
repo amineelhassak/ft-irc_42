@@ -17,10 +17,14 @@ std::string get_current_time()
 
 void Server::send_msg(Client& c, std::string msg)
 {
-	std::string message;
-	message = ":" + this->name + " " + msg + "\r\n";
+	std::string message = msg;
+	//message = ":" + this->name + " " + msg + "\r\n";
 	send(c.get_fd(), message.c_str(), message.length(), 0);
 }
+
+
+
+
 
 void Server::welcome_msg(Client& c)
 {
@@ -31,10 +35,10 @@ void Server::welcome_msg(Client& c)
 	std::string date = get_current_time();
 	std::string user_modes = "i";
 	std::string chan_modes = "it";
-	send_msg(c, "001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + name);
-	send_msg(c, "002 " + nick + " :Your host is " + name + ", running version " + version);
-	send_msg(c, "003 " + nick + " :This server was created " + date);
-	send_msg(c, "004 " + nick + " " + name + " " + version + " " + user_modes + " " + chan_modes);
+	send_msg(c,  std::string (":irc.com ") + "001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + name + "\r\n");
+	send_msg(c,  std::string (":irc.com ") + "002 " + nick + " :Your host is " + name + ", running version " + version + "\r\n");
+	send_msg(c, std::string (":irc.com ") +  "003 " + nick + " :This server was created " + date + "\r\n");
+	send_msg(c, std::string (":irc.com ") +  "004 " + nick + " " + name + " " + version + " " + user_modes + " " + chan_modes + "\r\n");
 }
 
 std::vector<std::string> split(const std::string& input) {

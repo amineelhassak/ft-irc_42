@@ -1,8 +1,8 @@
 #ifndef REPL_HPP
 #define REPL_HPP
 
-#define PREFIX ""
-#define POSTFIX ""
+#define PREFIX ":irc.com "
+#define POSTFIX "\r\n"
 
 #define RPL_WELCOME_N "001"
 #define RPL_YOURHOST_N "002"

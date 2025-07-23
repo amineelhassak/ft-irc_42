@@ -49,6 +49,7 @@ class Server
 	int		existChannel(std::string name);
 	void 	help(Client *c);
 	void 	bot (Client *c, std::vector <std::string> cmd);
+	void private_msg (Client& client , std::string msg_text, std::string target , Client &user);
 	// void 	addToChannel(Channel cl,Client *c);
 	// void 	addToAdmin(Channel cl,Client *c);
 	// void	error_reply(int fd_client, const std::string& )
