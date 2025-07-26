@@ -1,0 +1,4 @@
+PASS sec
+USER a a a :a
+NICK K
+PRIVMSG a :aa

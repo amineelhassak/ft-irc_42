@@ -75,6 +75,7 @@ void Server::handle_buff_line(Client& c, const std::string& buff)
 	size_t pos;
 	while ((pos = c.buffer.find("\r\n")) != std::string::npos) {
 		std::string line = c.buffer.substr(0, pos);
+		//std::cerr << "line => " << line << '\n';
        c.buffer.erase(0, pos + 2);
 	}
 	std::vector<std::string> cmd = split(buff);
@@ -127,6 +128,7 @@ void    Server::init_socket()
 	server.sin_addr.s_addr = INADDR_ANY;
 	if (bind(this->socket_fd, (struct sockaddr*)&server, sizeof(server)) != 0)
 	{
+		close(this->socket_fd);
 		std::cerr << "bind failed!" << std::endl;
 		exit(1);
 	}

@@ -1,10 +1,23 @@
 #include "../headers/server.hpp"
 
+bool nick_exist (std::map<int, Client> clients, std::string nick)
+{
+	for (int i =0; i < clients.size(); i++)
+	{
+		if (clients[i].get_nick() == nick)
+			return true;
+	}
+	return false;
+}
 void Server::auth(Client &c, std::vector<std::string> cmd)
 {
 	// std::cout << cmd << std::endl;
 	if (cmd[0] == "PASS")
 	{
+		if (c.is_registered()) {
+			send_msg(c, "ur already uthentified");
+			return;
+		}
 		if (cmd.size() != 2)
 		{
 			send_msg(c, "461 * USER :Syntax error");
@@ -37,8 +50,18 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 			send_msg(c, "461 * USER :Syntax error");
 			return;
 		}
+		if (cmd[1][0] == '#')
+		{
+			send_msg(c, "forbidden chaaracter used");
+			return ;
+		}
 		std::string	nick;
 		nick = cmd[1];
+		if (nick_exist(clients, nick))
+		{
+			send_msg(c, "nick already exist please try a new one");
+			return;
+		}
 		if (nick.empty())
 		{
 			send_msg(c, "461 * NICK :Not enough parameters");
@@ -116,7 +139,7 @@ void Server::execute_cmd(Client &c, std::vector<std::string> cmdList)
 	cmd = up(cmd);
 	cmdList[0] = up(cmdList[0]);
 	// std::cout << cmd << std::endl;
-
+		
 	if (cmd == "PASS" || cmd == "USER" || cmd == "NICK")
 		auth(c, cmdList);
 	else if (!c.is_registered())
