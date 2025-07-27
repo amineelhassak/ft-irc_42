@@ -36,11 +36,7 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
         return;
     }
     const std::vector<Client*>& users = channel->getUsers();
-     std::vector<Client*> admin = channel->getAdmins();
-    if (admin.size() == 0 && users.size() > 0)
-    {
-        admin.push_back(users[0]);
-    }
+     
     bool isOperator = false;
     const std::vector<Client*>& admins = channel->getAdmins();
     for (size_t i = 0; i < admins.size(); ++i) {
@@ -69,10 +65,19 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
         return;
     }
     channel->removeFromChannel(targetClient);
-    std::string kickMsg = ":" + c.get_nick() + " KICK " + channelName + " " + targetNick + " :" + reason;
+    std::string kickMsg = ":" + c.get_nick() + " KICK " + channelName + " " + targetNick + " :" + reason + "\r\n";
     for (size_t i = 0; i < users.size(); ++i) {
         send_msg(*users[i], kickMsg);
     }
     send_msg(*targetClient, kickMsg);
-   
+   std::vector<Client*> admin = channel->getAdmins();
+if (admin.empty())  // Using empty() is more idiomatic than size() == 0
+{
+    //// Remove channel from allChannels vector
+    //allChannels.erase(
+    //    std::remove(allChannels.begin(), allChannels.end(), channel),
+    //    allChannels.end()
+    //);
+}
+
 }
