@@ -18,6 +18,7 @@ class Client
 	std::string	password;
 	bool		has_nick;
 	bool		has_user;
+	bool		has_pass;
 	bool		registered;
 	// hostname
 	// ipadress
@@ -33,12 +34,15 @@ class Client
 	void		set_realname(std::string realname);
 	void		set_has_nick(bool b);
 	void		set_has_user(bool b);
+	void		set_has_pass(bool b);
 	void		set_registered(bool b);
 	std::string	get_nick();
 	std::string	get_user();
+	std::string	get_pass();
 	std::string	get_realname();
 	bool		get_has_nick();
 	bool		get_has_user();
+	bool		get_has_pass();
 	bool		is_registered();
 	int			get_fd();
 

@@ -65,10 +65,6 @@ int Server::existChannel(std::string name)
 	return 0;
 }
 
-
-
-
-// Gère le buffer reçu d'un client : concatène, découpe et traite chaque ligne complète
 void Server::handle_buff_line(Client& c, const std::string& buff)
 {
 	c.buffer += buff;
@@ -136,6 +132,7 @@ void    Server::init_socket()
     displayHelps();
 	if (listen(this->socket_fd, SOMAXCONN) != 0)
 	{
+		close(this->socket_fd);
 		std::cerr << "listen failed!" << std::endl;
 		exit(1);
 	}

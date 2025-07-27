@@ -9,69 +9,79 @@ bool nick_exist (std::map<int, Client> clients, std::string nick)
 	}
 	return false;
 }
+
+bool	check_realname(std::string realname)
+{
+	if (realname.length() < 2)
+		return (false);
+	if (!std::isalnum(realname[1]))
+		return (false);
+	return true;
+}
+
 void Server::auth(Client &c, std::vector<std::string> cmd)
 {
 	static int pass_entered;
-	// std::cout << cmd << std::endl;
 	if (cmd[0] == "PASS")
 	{
-		if (pass_entered) {
-			send_msg(c, "ur already uthentified");
+		if (c.get_has_pass())
+		{
+			send_msg(c, "462 * PASS :You may not reregister\r\n");
 			return;
 		}
 		if (cmd.size() != 2)
 		{
-			send_msg(c, "461 * USER :Syntax error");
+			send_msg(c, "461 * PASS :Syntax error\r\n");
 			return;
 		}
 		std::string	pass;
 		pass = cmd[1];
 		if (pass.empty())
 		{
-			send_msg(c, "461 * PASS :Not enough parameters");
+			send_msg(c, "461 * PASS :Not enough parameters\r\n");
 			return;
 		}
 		if (c.is_registered())
 		{
-			send_msg(c, "462 * :You may not reregister");
+			send_msg(c, "462 * PASS :You may not reregister\r\n");
 			return;
 		}
 		if (password != pass)
 		{
-			send_msg(c, "464 * :Password incorrect");
+			send_msg(c, "464 * PASS :Password incorrect\r\n");
 			return;
 		}
-		pass_entered = 1;
 		c.set_pass(pass);
+		c.set_has_pass(true);
 	}
 	else if (cmd[0] == "NICK")
 	{
 		if (cmd.size() != 2)
 		{
 			std::cout << "tanya" << std::endl;
-			send_msg(c, "461 * USER :Syntax error");
+			send_msg(c, "461 * USER :Syntax error\r\n");
 			return;
 		}
 		if (cmd[1][0] == '#')
 		{
-			send_msg(c, "forbidden chaaracter used");
+			send_msg(c, "forbidden chaaracter used\r\n");
 			return ;
 		}
 		std::string	nick;
 		nick = cmd[1];
 		if (nick_exist(clients, nick))
 		{
-			send_msg(c, "nick already exist please try a new one");
+			send_msg(c, nick + " :Nickname is already in use\r\n");
 			return;
 		}
 		if (nick.empty())
 		{
-			send_msg(c, "461 * NICK :Not enough parameters");
+			send_msg(c, "461 * NICK :Not enough parameters\r\n");
 			return;
 		}
 		if (c.is_registered())
 		{
-			send_msg(c, "462 * :You may not reregister");
+			send_msg(c, "462 * :You may not reregister\r\n");
 			return;
 		}
 		c.set_nick(nick);
@@ -79,9 +89,9 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	}
 	else if (cmd[0] == "USER")
 	{
-		if (cmd.size() < 5 || cmd[4].empty() || cmd[4][0] != ':')
+		if (cmd.size() < 5 || cmd[4].empty() || cmd[4][0] != ':' || !check_realname(cmd[4]))
 		{
-			send_msg(c, "461 * USER :Syntax error");
+			send_msg(c, "461 * USER :Syntax error\r\n");
 			return;
 		}
 		std::string user = cmd[1];
@@ -96,18 +106,18 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 		}
 		if(realname.empty())
 		{
-			send_msg(c, "461 * :need more params");
+			send_msg(c, "461 * :need more params\r\n");
 			return;
 		}
 		realname = realname.substr(2);
 		if (user.empty())
 		{
-			send_msg(c, "461 * USER :Not enough parameters");
+			send_msg(c, "461 * USER :Not enough parameters\r\n");
 			return;
 		}
 		if (c.is_registered())
 		{
-			send_msg(c, "462 * :You may not reregister");
+			send_msg(c, "462 * :You may not reregister\r\n");
 			return;
 		}
 		c.set_user(user);
@@ -183,6 +193,6 @@ void Server::execute_cmd(Client &c, std::vector<std::string> cmdList)
 	}
 	else
 	{
-		send_msg(c, std::string("COMMAND NOT FOUND"));
+		send_msg(c, std::string("COMMAND NOT FOUND\r\n"));
 	}
 }
