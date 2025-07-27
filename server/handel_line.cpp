@@ -11,10 +11,11 @@ bool nick_exist (std::map<int, Client> clients, std::string nick)
 }
 void Server::auth(Client &c, std::vector<std::string> cmd)
 {
+	static int pass_entered;
 	// std::cout << cmd << std::endl;
 	if (cmd[0] == "PASS")
 	{
-		if (c.is_registered()) {
+		if (pass_entered) {
 			send_msg(c, "ur already uthentified");
 			return;
 		}
@@ -40,6 +41,7 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 			send_msg(c, "464 * :Password incorrect");
 			return;
 		}
+		pass_entered = 1;
 		c.set_pass(pass);
 	}
 	else if (cmd[0] == "NICK")
