@@ -1,6 +1,7 @@
 #include "../../headers/server.hpp"
 
 
+		{
 
 //                ERR_TOOMANYCHANNELS
 
@@ -26,13 +27,12 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
 		else
 			provided_key = "";
 
-        if (channel_name.empty() || (channel_name[0] != '#' && channel_name[0] != '&')) {
+        if (channel_name.empty() || (channel_name[0] != '#')) {
             send_msg(c, ERR_BADCHANMASK(channel_name));
             continue;
         }
         Channel* cl = NULL;
         for (size_t j = 0; j < allChannels.size(); ++j)
-		{
 			if (allChannels[j].getName() == channel_name)
 			{
                 cl = &allChannels[j];

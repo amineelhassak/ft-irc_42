@@ -26,7 +26,7 @@ void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client& c
     std::vector<std::string> receiverList = splitByComma(receivers);
     for (size_t i = 0; i < receiverList.size(); ++i) {
         std::string receiver = receiverList[i];
-        if (receiver[0] == '#' || receiver[0] == '&') {
+        if (receiver[0] == '#' ) {
             Channel* channel = NULL;
             for (size_t j = 0; j < allChannels.size(); ++j) {
                 if (allChannels[j].getName() == receiver) {
@@ -42,7 +42,7 @@ void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client& c
                 send_msg(c, ERR_CANNOTSENDTOCHAN(receiver));
                 continue;
             }
-            std::string privmsgMsg = ":" + c.get_nick() + " PRIVMSG " + receiver + " :" + message + "\r\n";
+            std::string privmsgMsg = ":" + c.get_nick()  + "@localhost"+" PRIVMSG " + receiver + " :" + message + "\r\n";
             const std::vector<Client*>& users = channel->getUsers();
             for (size_t k = 0; k < users.size(); ++k) {
                 if (users[k] != &c) 
@@ -60,7 +60,7 @@ void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client& c
                 send_msg(c, ERR_NOSUCHNICK(receiver));
                 continue;
             }
-            std::string privmsgMsg = ":" + c.get_nick() + " PRIVMSG " + receiver + " :" + message + "\r\n";
+            std::string privmsgMsg = ":" + c.get_nick() + "@localhost" + " PRIVMSG " + receiver + " :" + message + "\r\n";
             send_msg(*targetClient, privmsgMsg);
         }
     }
