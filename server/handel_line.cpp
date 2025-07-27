@@ -58,20 +58,19 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	{
 		if (cmd.size() != 2)
 		{
-			std::cout << "tanya" << std::endl;
-			send_msg(c, "461 * USER :Syntax error\r\n");
+			send_msg(c, "461 * NICK :Syntax error\r\n");
 			return;
 		}
 		if (cmd[1][0] == '#')
 		{
-			send_msg(c, "forbidden chaaracter used\r\n");
+			send_msg(c, "461 * NICK :Syntax error\r\n");
 			return ;
 		}
 		std::string	nick;
 		nick = cmd[1];
 		if (nick_exist(clients, nick))
 		{
-			send_msg(c, nick + " :Nickname is already in use\r\n");
+			send_msg(c, nick + " 433 * NICK :Nickname is already in use\r\n");
 			return;
 		}
 		if (nick.empty())
@@ -81,7 +80,7 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 		}
 		if (c.is_registered())
 		{
-			send_msg(c, "462 * :You may not reregister\r\n");
+			send_msg(c, "462 * NICK :You may not reregister\r\n");
 			return;
 		}
 		c.set_nick(nick);
@@ -106,7 +105,7 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 		}
 		if(realname.empty())
 		{
-			send_msg(c, "461 * :need more params\r\n");
+			send_msg(c, "461 * USER :need more params\r\n");
 			return;
 		}
 		realname = realname.substr(2);
@@ -117,7 +116,7 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 		}
 		if (c.is_registered())
 		{
-			send_msg(c, "462 * :You may not reregister\r\n");
+			send_msg(c, "462 * USER :You may not reregister\r\n");
 			return;
 		}
 		c.set_user(user);
