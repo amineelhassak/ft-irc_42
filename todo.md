@@ -5,9 +5,6 @@ the same NICK
 nick #test
 
 
-
-
-
 ➜  IRC git:(fa5a9a2) ✗ nc -C localhost 6650
 pass sec
 user a a a :       

@@ -88,7 +88,7 @@ void displayHelps()
         << "  - Authenticate yourself with the server using a password.\n"
         << "  - Must be sent before NICK/USER if required by the server.\n\n"
 
-        << YELLOW << "USER <username> <hostname> <servername> <realname>" << RESET << "\n"
+        << YELLOW << "USER <username> <unused> <unused> <realname>" << RESET << "\n"
         << "  - Register a new user with the server.\n"
         << "  - Example: USER john localhost server :John Doe\n\n"
 
@@ -107,6 +107,24 @@ void displayHelps()
         << YELLOW << "KICK <#channel> <user> [<reason>]" << RESET << "\n"
         << "  - Remove a user from a channel (must be an operator).\n"
         << "  - Example: KICK #general bob :spamming\n\n"
+
+		<< YELLOW << "MODE <channel> <flags> [<params>]" << RESET << "\n"
+		<< "  - Change or view the mode of a channel.\n"
+		<< "  - Modes control channel settings (e.g., +i, +t, +o).\n"
+		<< "  - Example: MODE #general +o alice  (makes alice an operator)\n"
+		<< "  - Example: MODE #general           (shows current modes)\n\n"
+
+		<< YELLOW << "TOPIC <channel> [<topic>]" << RESET << "\n"
+		<< "  - View or set the topic of a channel.\n"
+		<< "  - Without <topic>: shows the current topic.\n"
+		<< "  - With <topic>: sets the new topic (if allowed).\n"
+		<< "  - Example: TOPIC #general :Welcome to our channel!\n\n"
+
+		<< YELLOW << "PRIVMSG <target> :<message>" << RESET << "\n"
+		<< "  - Send a private message to a user or channel.\n"
+		<< "  - <target> can be a nickname or channel name.\n"
+		<< "  - Example: PRIVMSG bob :Hello Bob!\n"
+		<< "  - Example: PRIVMSG #general :Hello everyone!\n\n"
 
         << BOLD << CYAN << "[=======================================]" << RESET << "\n";
 }
