@@ -1,6 +1,9 @@
 #include "../../headers/server.hpp"
 
 
+
+//                ERR_TOOMANYCHANNELS
+
 void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
 {
 	if (cmds.size() < 2) {
@@ -24,11 +27,10 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
 			provided_key = "";
 
         if (channel_name.empty() || (channel_name[0] != '#' && channel_name[0] != '&')) {
-            std::cout << "lowlaj";
             send_msg(c, ERR_BADCHANMASK(channel_name));
             continue;
         }
-        Channel* cl = nullptr;
+        Channel* cl = NULL;
         for (size_t j = 0; j < allChannels.size(); ++j)
 		{
 			if (allChannels[j].getName() == channel_name)
@@ -37,6 +39,11 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
                 break;
             }
         }
+        // if (!cl)
+        // {
+        //     send_msg(c,ERR_NOSUCHCHANNEL(channel_name));
+        //     return;
+        // }
         bool userAlreadyInChannel = false;
         if (cl) {
             if (cl->hasClient(&c)) {
@@ -76,11 +83,11 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
             for (size_t k = 0; k < admins.size(); ++k) {
                 if (admins[k] == users[j]) { isOp = true; break; }
             }
-            if (isOp) names_list += "@";
+            if (isOp)
+                names_list += "@";
             names_list += users[j]->get_nick() + " ";
         }
         std::cout << "User joined" << std::endl;
-        send_msg(c, RPL_JOIN( c.get_nick(), channel_name));
         send_msg(c, RPL_NAMREPLY(c.get_nick(), channel_name, names_list));
         send_msg(c, RPL_ENDOFNAMES(c.get_nick(), channel_name));
     }

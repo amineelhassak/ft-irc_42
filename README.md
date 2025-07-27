@@ -372,7 +372,7 @@ This project is part of the 42 School curriculum. The code is written for educat
 [![GitHub forks](https://img.shields.io/github/forks/yourusername/ft-irc_42?style=social)](https://github.com/yourusername/ft-irc_42/network)
 [![GitHub issues](https://img.shields.io/github/issues/yourusername/ft-irc_42)](https://github.com/yourusername/ft-irc_42/issues)
 
-**Author**: [Your Name]  
+**Author**: amine el hassak && mohammed el amarty && kaltoum el mounjid
 **School**: 42 School  
 **Project**: FT_IRC  
 **Last updated**: December 2024

@@ -42,7 +42,7 @@ void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client& c
                 send_msg(c, ERR_CANNOTSENDTOCHAN(receiver));
                 continue;
             }
-            std::string privmsgMsg = ":" + c.get_nick() + " PRIVMSG " + receiver + " :" + message;
+            std::string privmsgMsg = ":" + c.get_nick() + " PRIVMSG " + receiver + " :" + message + "\r\n";
             const std::vector<Client*>& users = channel->getUsers();
             for (size_t k = 0; k < users.size(); ++k) {
                 if (users[k] != &c) 
@@ -60,7 +60,7 @@ void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client& c
                 send_msg(c, ERR_NOSUCHNICK(receiver));
                 continue;
             }
-            std::string privmsgMsg = ":" + c.get_nick() + " PRIVMSG " + receiver + " :" + message;
+            std::string privmsgMsg = ":" + c.get_nick() + " PRIVMSG " + receiver + " :" + message + "\r\n";
             send_msg(*targetClient, privmsgMsg);
         }
     }

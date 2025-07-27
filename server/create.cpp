@@ -1,5 +1,10 @@
 #include "../headers/server.hpp"
 #include "../headers/client.hpp"
+const char* RESET   = "\033[0m";
+const char* BOLD    = "\033[1m";
+const char* CYAN    = "\033[36m";
+const char* YELLOW  = "\033[33m";
+const char* GREEN   = "\033[32m";
 
 std::string get_current_time()
 {
@@ -12,10 +17,14 @@ std::string get_current_time()
 
 void Server::send_msg(Client& c, std::string msg)
 {
-	std::string message;
-	message = ":" + this->name + " " + msg + "\r\n";
+	std::string message = msg;
+	//message = ":" + this->name + " " + msg + "\r\n";
 	send(c.get_fd(), message.c_str(), message.length(), 0);
 }
+
+
+
+
 
 void Server::welcome_msg(Client& c)
 {
@@ -26,10 +35,10 @@ void Server::welcome_msg(Client& c)
 	std::string date = get_current_time();
 	std::string user_modes = "i";
 	std::string chan_modes = "it";
-	send_msg(c, "001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + name);
-	send_msg(c, "002 " + nick + " :Your host is " + name + ", running version " + version);
-	send_msg(c, "003 " + nick + " :This server was created " + date);
-	send_msg(c, "004 " + nick + " " + name + " " + version + " " + user_modes + " " + chan_modes);
+	send_msg(c,  std::string (":irc.com ") + "001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + name + "\r\n");
+	send_msg(c,  std::string (":irc.com ") + "002 " + nick + " :Your host is " + name + ", running version " + version + "\r\n");
+	send_msg(c, std::string (":irc.com ") +  "003 " + nick + " :This server was created " + date + "\r\n");
+	send_msg(c, std::string (":irc.com ") +  "004 " + nick + " " + name + " " + version + " " + user_modes + " " + chan_modes + "\r\n");
 }
 
 std::vector<std::string> split(const std::string& input) {
@@ -56,18 +65,55 @@ int Server::existChannel(std::string name)
 	return 0;
 }
 
+
+
+
+// Gère le buffer reçu d'un client : concatène, découpe et traite chaque ligne complète
 void Server::handle_buff_line(Client& c, const std::string& buff)
 {
 	c.buffer += buff;
 	size_t pos;
 	while ((pos = c.buffer.find("\r\n")) != std::string::npos) {
 		std::string line = c.buffer.substr(0, pos);
+		//std::cerr << "line => " << line << '\n';
        c.buffer.erase(0, pos + 2);
 	}
 	std::vector<std::string> cmd = split(buff);
 	execute_cmd(c, cmd);
 }
 
+void displayHelps()
+{
+    std::cout <<
+        BOLD << CYAN << "[============= IRC MANUAL =============]" << RESET << "\n"
+        << BOLD << "Available Commands:" << RESET << "\n\n"
+
+        << YELLOW << "PASS <password>" << RESET << "\n"
+        << "  - Authenticate yourself with the server using a password.\n"
+        << "  - Must be sent before NICK/USER if required by the server.\n\n"
+
+        << YELLOW << "USER <username> <hostname> <servername> <realname>" << RESET << "\n"
+        << "  - Register a new user with the server.\n"
+        << "  - Example: USER john localhost server :John Doe\n\n"
+
+        << YELLOW << "NICK <nickname>" << RESET << "\n"
+        << "  - Set or change your nickname.\n"
+        << "  - Example: NICK coolguy123\n\n"
+
+        << YELLOW << "JOIN <#channel>" << RESET << "\n"
+        << "  - Join a channel or create one if it doesn't exist.\n"
+        << "  - Example: JOIN #general\n\n"
+
+        << YELLOW << "INVITE <nickname> <#channel>" << RESET << "\n"
+        << "  - Invite a user to a channel you are in (must be an operator).\n"
+        << "  - Example: INVITE alice #general\n\n"
+
+        << YELLOW << "KICK <#channel> <user> [<reason>]" << RESET << "\n"
+        << "  - Remove a user from a channel (must be an operator).\n"
+        << "  - Example: KICK #general bob :spamming\n\n"
+
+        << BOLD << CYAN << "[=======================================]" << RESET << "\n";
+}
 void    Server::init_socket()
 {
 	struct  sockaddr_in server;
@@ -82,10 +128,12 @@ void    Server::init_socket()
 	server.sin_addr.s_addr = INADDR_ANY;
 	if (bind(this->socket_fd, (struct sockaddr*)&server, sizeof(server)) != 0)
 	{
+		close(this->socket_fd);
 		std::cerr << "bind failed!" << std::endl;
 		exit(1);
 	}
 	std::cout << "Welcom To Our Server" << std::endl;
+    displayHelps();
 	if (listen(this->socket_fd, SOMAXCONN) != 0)
 	{
 		std::cerr << "listen failed!" << std::endl;
