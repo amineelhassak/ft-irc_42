@@ -45,6 +45,11 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
             break;
         }
     }
+    if (allChannels.size() == 1)
+    {
+        send_msg(c, "ERROR\r\n");
+        return ;
+    }
     if (!isOperator) {
         send_msg(c, ERR_CHANOPRIVSNEEDED(channelName));
         return;

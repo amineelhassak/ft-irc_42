@@ -21,7 +21,7 @@ bool	check_realname(std::string realname)
 
 void Server::auth(Client &c, std::vector<std::string> cmd)
 {
-	static int pass_entered;
+	
 	if (cmd[0] == "PASS")
 	{
 		if (c.get_has_pass())
@@ -150,7 +150,24 @@ void Server::execute_cmd(Client &c, std::vector<std::string> cmdList)
 	cmd = up(cmd);
 	cmdList[0] = up(cmdList[0]);
 	// std::cout << cmd << std::endl;
-		
+	
+
+	static int i;
+	if(cmd == "LOG")
+	{
+		i++;
+		c.set_has_nick(true);
+		c.set_has_user(true);
+		c.set_has_pass(true);
+		c.set_registered(true);
+		c.set_nick("nick" + std::to_string(i));
+		c.set_pass("pass");
+		c.set_user("user" + std::to_string(i));
+		c.set_realname("name" + std::to_string(i));
+		std::cout << "default log for testing ..." << std::endl;
+		return;
+	}
+
 	if (cmd == "PASS" || cmd == "USER" || cmd == "NICK")
 		auth(c, cmdList);
 	else if (!c.is_registered())

@@ -90,5 +90,11 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
         std::cout << "User joined" << std::endl;
         send_msg(c, RPL_NAMREPLY(c.get_nick(), channel_name, names_list));
         send_msg(c, RPL_ENDOFNAMES(c.get_nick(), channel_name));
+        for (int i =0; i < users.size(); i++)
+        {
+            // std::cout << c.get_nick() << " -------------  "<< users[i]->get_nick() << std::endl ;
+            if (users[i] != &c)
+                send_msg(*users[i], ":" + c.get_nick() + "!" + c.get_user() + "@host JOIN :" + channel_name + "\r\n");
+        }
     }
 }
