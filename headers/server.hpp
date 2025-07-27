@@ -34,6 +34,7 @@ class Server
 	public:
 	Server(int port, std::string password);
 	~Server();
+    void	checkAdmin(Channel *c);
 	void    init_socket();
 	void	auth(Client& c, const std::vector<std::string> cmd);
 	void	handle_buff_line(Client& c, const std::string& buff);
@@ -50,9 +51,9 @@ class Server
 	void 	help(Client *c);
 	void 	bot (Client *c, std::vector <std::string> cmd);
 	void private_msg (Client& client , std::string msg_text, std::string target , Client &user);
-	// void 	addToChannel(Channel cl,Client *c);
-	// void 	addToAdmin(Channel cl,Client *c);
-	// void	error_reply(int fd_client, const std::string& )
+	size_t size() const ;
+    Client* getUser(size_t i);
+    void addAdmin(Client* client);
 };
 
 std::vector<std::string> splitByComma(const std::string &input);

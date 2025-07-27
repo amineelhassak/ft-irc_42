@@ -22,6 +22,7 @@ private:
     bool topicRestriction; // Channel mode +t (topic restriction)
     // Channel modes: i (invite-only), k (key), l (limit), b (ban), o (op), t (topic restriction)
 public:
+    // void checkAdmin(Channel &c);
     Channel(const std::string &name);
     std::string getName() const;
     std::string getTopic() const;

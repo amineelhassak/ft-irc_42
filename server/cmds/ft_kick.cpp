@@ -1,5 +1,10 @@
 #include "../../headers/server.hpp"
 
+// void Server::checkAdmin(Channel *c)
+// {
+//       if (c->size() == 0)
+//         c->admins->push_back(c->users[0])
+// }
 
 void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
     if (cmds.size() < 3) {
@@ -9,6 +14,7 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
     std::string channelName = cmds[1];
     std::string targetNick = cmds[2];
     std::string reason = (cmds.size() > 3) ? cmds[3] : c.get_nick(); 
+    
     if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&')) {
         send_msg(c, ERR_BADCHANMASK(channelName));
         return;
@@ -28,6 +34,12 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
     if (!channel->hasClient(&c)) {
         send_msg(c, ERR_NOTONCHANNEL(c.get_nick(), channelName));
         return;
+    }
+    const std::vector<Client*>& users = channel->getUsers();
+     std::vector<Client*> admin = channel->getAdmins();
+    if (admin.size() == 0 && users.size() > 0)
+    {
+        admin.push_back(users[0]);
     }
     bool isOperator = false;
     const std::vector<Client*>& admins = channel->getAdmins();
@@ -58,9 +70,9 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
     }
     channel->removeFromChannel(targetClient);
     std::string kickMsg = ":" + c.get_nick() + " KICK " + channelName + " " + targetNick + " :" + reason;
-    const std::vector<Client*>& users = channel->getUsers();
     for (size_t i = 0; i < users.size(); ++i) {
         send_msg(*users[i], kickMsg);
     }
     send_msg(*targetClient, kickMsg);
+   
 }
