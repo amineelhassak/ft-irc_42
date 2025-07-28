@@ -17,9 +17,7 @@ std::string get_current_time()
 
 void Server::send_msg(Client& c, std::string msg)
 {
-	std::string message = msg;
-	//message = ":" + this->name + " " + msg + "\r\n";
-	send(c.get_fd(), message.c_str(), message.length(), 0);
+	send(c.get_fd(), msg.c_str(), msg.length(), 0);
 }
 
 
@@ -69,13 +67,19 @@ void Server::handle_buff_line(Client& c, const std::string& buff)
 {
 	c.buffer += buff;
 	size_t pos;
-	while ((pos = c.buffer.find("\r\n")) != std::string::npos) {
-		std::string line = c.buffer.substr(0, pos);
-		//std::cerr << "line => " << line << '\n';
-       c.buffer.erase(0, pos + 2);
+	if ((pos = c.buffer.find("\n")) == std::string::npos)
+	{
+		return;
 	}
-	std::vector<std::string> cmd = split(buff);
-	execute_cmd(c, cmd);
+	while ((pos = c.buffer.find("\n")) != std::string::npos)
+	{
+		std::string line = c.buffer.substr(0, pos);
+		c.buffer.erase(0, pos + 1);
+		if (!line.empty() && line[line.size() - 1] == '\r')
+            line.erase(line.size() - 1);
+		std::vector<std::string> cmd = split(line);
+		execute_cmd(c, cmd);
+	}
 }
 
 void displayHelps()
@@ -140,6 +144,14 @@ void    Server::init_socket()
 	server.sin_family = AF_INET;
 	server.sin_port = htons(port);
 	server.sin_addr.s_addr = INADDR_ANY;
+	int opt = 1;
+	if (setsockopt(this->socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
+	{
+		close(this->socket_fd);
+		std::cerr << "bind failed!" << std::endl; // check error msg
+		exit(1);
+	}
+
 	if (bind(this->socket_fd, (struct sockaddr*)&server, sizeof(server)) != 0)
 	{
 		close(this->socket_fd);
@@ -188,6 +200,7 @@ void    Server::init_socket()
 				if (poll_fds[i].revents & POLLIN)
 				{
 					char buff[512];
+					memset(buff, 0, 512);
 					ssize_t read_size;
 					read_size = recv(poll_fds[i].fd, buff, sizeof(buff), 0);
 					if (read_size <= 0)
@@ -197,7 +210,6 @@ void    Server::init_socket()
 						--i;
 						continue;
 					}
-					buff[read_size] = '\0';
 					handle_buff_line(clients[poll_fds[i].fd], buff);
 				}
 				else if (poll_fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))

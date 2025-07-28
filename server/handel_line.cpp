@@ -21,17 +21,16 @@ bool	check_realname(std::string realname)
 
 void Server::auth(Client &c, std::vector<std::string> cmd)
 {
-	static int pass_entered;
 	if (cmd[0] == "PASS")
 	{
-		if (c.get_has_pass())
-		{
-			send_msg(c, "462 * PASS :You may not reregister\r\n");
-			return;
-		}
 		if (cmd.size() != 2)
 		{
 			send_msg(c, "461 * PASS :Syntax error\r\n");
+			return;
+		}
+		if (c.get_has_pass())
+		{
+			send_msg(c, "462 * PASS :You may not reregister\r\n");
 			return;
 		}
 		std::string	pass;
@@ -68,14 +67,14 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 		}
 		std::string	nick;
 		nick = cmd[1];
-		if (nick_exist(clients, nick))
-		{
-			send_msg(c, nick + " 433 * NICK :Nickname is already in use\r\n");
-			return;
-		}
 		if (nick.empty())
 		{
 			send_msg(c, "461 * NICK :Not enough parameters\r\n");
+			return;
+		}
+		if (nick_exist(clients, nick))
+		{
+			send_msg(c, nick + " 433 * NICK :Nickname is already in use\r\n");
 			return;
 		}
 		if (c.is_registered())
@@ -94,8 +93,8 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 			return;
 		}
 		std::string user = cmd[1];
-		std::string param1 = cmd[2];
-		std::string param2 = cmd[3];
+		std::string hostname = cmd[2];
+		std::string servername = cmd[3];
 		std::string realname;
 		for (size_t i = 4; i < cmd.size(); ++i)
 		{
@@ -123,11 +122,7 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 		c.set_realname(realname);
 		c.set_has_user(true);
 	}
-	if (c.get_has_nick() && c.get_has_user() && !c.is_registered())
-	{
-		c.set_registered(true);
-		welcome_msg(c);
-	}
+	
 }
 
 
@@ -146,16 +141,20 @@ void Server::execute_cmd(Client &c, std::vector<std::string> cmdList)
 	if (!cmdList.size())
 		return;
 	std::string cmd = cmdList[0];
-	// std::cout << cmd << std::endl;
 	cmd = up(cmd);
 	cmdList[0] = up(cmdList[0]);
-	// std::cout << cmd << std::endl;
-		
 	if (cmd == "PASS" || cmd == "USER" || cmd == "NICK")
+	{
 		auth(c, cmdList);
+		if (c.get_has_pass() && c.get_has_nick() && c.get_has_user() && !c.is_registered())
+		{
+			c.set_registered(true);
+			welcome_msg(c);
+		}
+	}
 	else if (!c.is_registered())
 	{
-		send_msg(c, "ur not autntified");
+		send_msg(c, "451 * :You have not registered\n");
 		return ;
 	}
 	else if (cmd == "JOIN")
