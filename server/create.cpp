@@ -148,7 +148,7 @@ void    Server::init_socket()
 	if (setsockopt(this->socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
 	{
 		close(this->socket_fd);
-		std::cerr << "bind failed!" << std::endl; // check error msg
+		std::cerr << "setsockopt failed!" << std::endl;
 		exit(1);
 	}
 
