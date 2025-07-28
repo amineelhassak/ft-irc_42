@@ -47,7 +47,7 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
     }
     if (allChannels.size() == 1)
     {
-        send_msg(c, "ERROR\r\n");
+        send_msg(c, "YOU CAN'T KICK\r\n");
         return ;
     }
     if (!isOperator) {
@@ -75,14 +75,4 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
         send_msg(*users[i], kickMsg);
     }
     send_msg(*targetClient, kickMsg);
-   std::vector<Client*> admin = channel->getAdmins();
-if (admin.empty())  // Using empty() is more idiomatic than size() == 0
-{
-    //// Remove channel from allChannels vector
-    //allChannels.erase(
-    //    std::remove(allChannels.begin(), allChannels.end(), channel),
-    //    allChannels.end()
-    //);
-}
-
 }
