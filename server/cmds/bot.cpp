@@ -62,17 +62,17 @@ void Server::bot (Client *c, std::vector <std::string> cmd){
 	if (cmd.size() == 2)
 	{
 		if (sequence == cmd[1])
-			send_msg(*c, "OHHH NIICE U WIN");
+			send_msg(*c, "OHHH NIICE U WIN\r\n");
 		else 
-			send_msg(*c, "3NDK DAKIRA DYAL DBANA");
+			send_msg(*c, "3NDK DAKIRA DYAL DBANA\r\n");
 		return ;
 	}
 	sequence = generateSequence(6);
-	send_msg(*c, "rember this sequence");
-	send_msg(*c, sequence);
+	send_msg(*c, "rember this sequence: " + sequence + "\r\n");
 	sleep(3);
-	for (int i = 0; i < 20 ; i++)
+	for (int i = 0; i < 50 ; i++)
 	{
-		send_msg(*c, "");
+		send_msg(*c, "\r\n");
 	}
+	send_msg(*c, "===========================================================\r\n");
 }

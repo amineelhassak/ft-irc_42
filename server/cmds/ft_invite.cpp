@@ -58,7 +58,7 @@ void Server::ft_invite(std::vector<std::string> cmds, Server* server, Client &c)
     if (channel) {
         channel->invite(targetClient);
     }
-    std::string inviteMsg = ":" + c.get_nick() + " INVITE " + targetNick + " " + channelName;
+    std::string inviteMsg = ":" + c.get_nick() + " INVITE " + targetNick + " " + channelName + "\r\n";
     send_msg(*targetClient, inviteMsg);
     send_msg(c, RPL_INVITING(c.get_nick(), targetNick, channelName));
 }

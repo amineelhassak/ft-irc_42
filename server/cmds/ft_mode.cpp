@@ -35,6 +35,7 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
         return;
     }
     std::string modeString = cmds[2];
+    const std::vector<Client*>& users = channel->getUsers();
     bool adding = true; // true pour +, false pour -
     std::string modeChangeMsg = ":" + c.get_nick() + " MODE " + channelName + " ";
     // Parcours la chaîne de modes (ex: +i, -k, +l 10, etc.)
@@ -131,11 +132,17 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
                         send_msg(c, ERR_INVALIDMODEPARM(channelName, "l"));
                         return;
                     }
+                    if (users.size() > limit)
+                    {
+                        send_msg(c, "Number of users is too big to accept input.\r\n");
+                        return;
+                    }
                     channel->setUserLimit(limit);
                     modeChangeMsg += "+l " + cmds[3] + " ";
                     // Supprime le paramètre utilisé
                     cmds.erase(cmds.begin() + 3);
-                } else {
+                }
+                else {
                     channel->setUserLimit(0);
                     modeChangeMsg += "-l ";
                 }
@@ -146,8 +153,8 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
                 return;
         }
     }
+    modeChangeMsg += "\r\n";
     // Envoie le message de changement de mode à tous les utilisateurs du canal
-    const std::vector<Client*>& users = channel->getUsers();
     for (size_t i = 0; i < users.size(); ++i) {
         send_msg(*users[i], modeChangeMsg);
     }

@@ -172,7 +172,7 @@ void Server::execute_cmd(Client &c, std::vector<std::string> cmdList)
 		auth(c, cmdList);
 	else if (!c.is_registered())
 	{
-		send_msg(c, "ur not autntified");
+		send_msg(c, "ur not autntified\r\n");
 		return ;
 	}
 	else if (cmd == "JOIN")

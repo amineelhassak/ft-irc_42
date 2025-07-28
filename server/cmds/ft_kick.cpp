@@ -45,7 +45,7 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
             break;
         }
     }
-    if (allChannels.size() == 1)
+    if (users.size() == 1)
     {
         send_msg(c, "YOU CAN'T KICK\r\n");
         return ;
