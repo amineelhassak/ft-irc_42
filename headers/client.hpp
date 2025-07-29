@@ -15,6 +15,8 @@ class Client
 	std::string	nickname;
 	std::string	username;
 	std::string	realname;
+	std::string	hostname;
+	std::string	servername;
 	std::string	password;
 	bool		has_nick;
 	bool		has_user;
@@ -32,6 +34,8 @@ class Client
 	void		set_user(std::string username);
 	void		set_pass(std::string password);
 	void		set_realname(std::string realname);
+	void		set_hostname(std::string hostname);
+	void		set_servername(std::string servername);
 	void		set_has_nick(bool b);
 	void		set_has_user(bool b);
 	void		set_has_pass(bool b);
@@ -40,6 +44,8 @@ class Client
 	std::string	get_user();
 	std::string	get_pass();
 	std::string	get_realname();
+	std::string	get_hostname();
+	std::string	get_servername();
 	bool		get_has_nick();
 	bool		get_has_user();
 	bool		get_has_pass();
