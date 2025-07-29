@@ -1,8 +1,7 @@
 #include "../../headers/server.hpp"
 
-
-
-void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client& c) {
+void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client& c)
+{
     if (cmds.size() < 2) {
         send_msg(c, ERR_NORECIPIENT(std::string("PRIVMSG")));
         return;
@@ -25,8 +24,6 @@ void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client& c
         return;
     }
     std::vector<std::string> receiverList = splitByComma(receivers);
-    
-
     for (size_t i = 0; i < receiverList.size(); ++i) {
         std::string receiver = receiverList[i];
         if (receiver[0] == '#' ) {

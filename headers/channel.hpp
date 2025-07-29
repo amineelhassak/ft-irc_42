@@ -23,6 +23,7 @@ private:
     // Channel modes: i (invite-only), k (key), l (limit), b (ban), o (op), t (topic restriction)
 public:
     // void checkAdmin(Channel &c);
+    void removeFromAdmin(Client* client);
     Channel(const std::string &name);
     std::string getName() const;
     std::string getTopic() const;

@@ -13,8 +13,14 @@ void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
     }
     std::string channelName = cmds[1];
     std::string targetNick = cmds[2];
-    std::string reason = (cmds.size() > 3) ? cmds[3] : c.get_nick(); 
-    
+    std::string reason;
+    for (size_t i = 2; i < cmds.size(); ++i) {
+        if (i > 2) reason += " ";
+        reason += cmds[i];
+    }
+    if (reason.length() > 0 && reason[0] == ':') {
+        reason = reason.substr(1);
+    }
     if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&')) {
         send_msg(c, ERR_BADCHANMASK(channelName));
         return;

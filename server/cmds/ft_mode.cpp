@@ -1,5 +1,11 @@
 #include "../../headers/server.hpp"
 
+void Channel::removeFromAdmin(Client* client) {
+    std::vector<Client*>& admins = this->admins;  // assuming admins is a member variable
+
+    admins.erase(std::remove(admins.begin(), admins.end(), client), admins.end());
+}
+
 void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
     if (cmds.size() < 2) {
         send_msg(c, ERR_NEEDMOREPARAMS(std::string("MODE")));
@@ -110,6 +116,7 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
                     channel->addToAdmin(targetClient);
                     modeChangeMsg += "+o " + targetNick + " ";
                 } else {
+                    channel->removeFromAdmin(targetClient);
                     modeChangeMsg += "-o " + targetNick + " ";
                 }
                 cmds.erase(cmds.begin() + 3);
