@@ -208,6 +208,10 @@ void    Server::init_socket()
 						close(poll_fds[i].fd);
 						poll_fds.erase(poll_fds.begin() + i);
 						--i;
+						// remove the client from map 
+						// std::map<int, Client>clients;
+
+						// function to remove it form all channels 
 						continue;
 					}
 					handle_buff_line(clients[poll_fds[i].fd], buff);

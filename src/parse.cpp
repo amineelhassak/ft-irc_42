@@ -12,6 +12,18 @@ bool	ft_isdigit(char *num)
 	return true;
 }
 
+bool	ft_isalnum(char *pass)
+{
+	int i = 0;
+	while (pass[i])
+	{
+		if(!isalnum(pass[i]))
+			return false;
+		i++;
+	}
+	return true;
+}
+
 int	parse_input(int ac, char **av)
 {
 	if (ac != 3)
@@ -29,6 +41,9 @@ int	parse_input(int ac, char **av)
 		std::cerr << "port not available!" << std::endl;
 		return 0;
 	}
+	std::string pass = av[2];
+	if (pass.empty() || !ft_isalnum(av[2]))
+		return 0;
 	if (!av[2])
 		return 0;
 	return 1;
