@@ -24,7 +24,6 @@
 #define RPL_ENDOFNAMES(sender, channel) PREFIX  "366 " + sender + " " + channel + " :End of /NAMES list."  POSTFIX
 
 #define RPL_JOINMSG(nickname, username, channelname)	(":" + nickname + "@" + username + " JOIN " + channelname + POSTFIX)
-#define RPL_JOIN(sender, channel)						":" + sender + " JOIN :" + channel + POSTFIX
 
 #define ERR_INVALIDBOTPARAMS(command) (PREFIX + std::string("B0T ") + std::string(command) + " :Invalid Number of Params" + POSTFIX)
 #define ERR_NICKNAMEINUSE(target)						PREFIX "433 " + target + " :Nickname is already in use" POSTFIX

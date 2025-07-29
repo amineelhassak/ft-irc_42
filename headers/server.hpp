@@ -35,7 +35,11 @@ class Server
 	Server(int port, std::string password);
 	~Server();
     void	checkAdmin(Channel *c);
+	void 	sendToClient(Client* client, const std::string& message);
 	void    init_socket();
+	int		isChannelExist(std::string chanName);
+	int 	findUser(std::string name, std::vector <Client*> cli);
+	void 	sendNamesRpl(Client* client, std::string channelName, int chanIndex);
 	void	auth(Client& c, const std::vector<std::string> cmd);
 	void	handle_buff_line(Client& c, const std::string& buff);
 	void	welcome_msg(Client& c);

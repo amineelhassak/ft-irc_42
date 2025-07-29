@@ -182,19 +182,19 @@ void    Server::init_socket()
 					buff[read_size] = '\0';
 					handle_buff_line(clients[poll_fds[i].fd], buff);
 				}
-				else if (poll_fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
-				{
-					if (poll_fds[i].revents & POLLHUP)
-						std::cerr << "client disconnected (POLLHUP)!" << std::endl;
-					if (poll_fds[i].revents & POLLERR)
-						std::cerr << "client socket error (POLLERR)!" << std::endl;
-					if (poll_fds[i].revents & POLLNVAL)
-						std::cerr << "client invalid fd (POLLNVAL)!" << std::endl;
-					close(poll_fds[i].fd);
-					poll_fds.erase(poll_fds.begin() + i);
-					--i;
-					continue;
-				}
+				// else if (poll_fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+				// {
+				// 	if (poll_fds[i].revents & POLLHUP)
+				// 		std::cerr << "client disconnected (POLLHUP)!" << std::endl;
+				// 	if (poll_fds[i].revents & POLLERR)
+				// 		std::cerr << "client socket error (POLLERR)!" << std::endl;
+				// 	if (poll_fds[i].revents & POLLNVAL)
+				// 		std::cerr << "client invalid fd (POLLNVAL)!" << std::endl;
+				// 	close(poll_fds[i].fd);
+				// 	poll_fds.erase(poll_fds.begin() + i);
+				// 	--i;
+				// 	continue;
+				// }
 			}
 		}
 	}

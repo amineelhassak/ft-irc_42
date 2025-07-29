@@ -19,7 +19,6 @@ void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client& c
     if (message.length() > 0 && message[0] == ':') {
         message = message.substr(1);
     }
-    std::cout << "[" << message << "]" <<  std::endl;
     if (message.empty()) {
         send_msg(c, ERR_NOTEXTTOSEND());
         return;

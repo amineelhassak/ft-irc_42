@@ -1,9 +1,6 @@
 #include "../../headers/server.hpp"
 
 
-
-//                ERR_TOOMANYCHANNELS
-
 void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
 {
 	if (cmds.size() < 2) {
@@ -44,7 +41,7 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
         //     send_msg(c,ERR_NOSUCHCHANNEL(channel_name));
         //     return;
         // }
-        bool userAlreadyInChannel = false;
+        bool flag = false;
         if (cl) {
             if (cl->hasClient(&c)) {
                 send_msg(c, ERR_USERONCHANNEL(c.get_nick(), channel_name));
@@ -63,18 +60,13 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
                 continue;
             }
             cl->addToChannel(&c);
-            send_msg(c, RPL_JOIN(c.get_nick(), channel_name));
+            flag = 1;
         } else {
             allChannels.push_back(Channel(channel_name));
             cl = &allChannels.back();
             cl->addToAdmin(&c);
             cl->addToChannel(&c);
-            send_msg(c, RPL_JOIN(c.get_nick(), channel_name));
         }
-        if (!cl->getTopic().empty())
-            send_msg(c, RPL_TOPIC(c.get_nick(), channel_name, cl->getTopic()));
-        else
-            send_msg(c, RPL_NOTOPIC(c.get_nick(), channel_name));
         std::string names_list;
         const std::vector<Client*>& users = cl->getUsers();
         const std::vector<Client*>& admins = cl->getAdmins();
@@ -88,13 +80,18 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
             names_list += users[j]->get_nick() + " ";
         }
         std::cout << "User joined" << std::endl;
+        for (int i = 0; i < users.size(); i++)
+        {
+            send_msg(*users[i], ":" + c.get_nick() + "!" + c.get_user() + "@host JOIN :" + channel_name + "\r\n");
+        }
+        if (flag)
+        {
+            if (!cl->getTopic().empty())
+                send_msg(c, RPL_TOPIC(c.get_nick(), channel_name, cl->getTopic()));
+            else
+                send_msg(c, RPL_NOTOPIC(c.get_nick(), channel_name));
+        }
         send_msg(c, RPL_NAMREPLY(c.get_nick(), channel_name, names_list));
         send_msg(c, RPL_ENDOFNAMES(c.get_nick(), channel_name));
-        for (int i =0; i < users.size(); i++)
-        {
-            // std::cout << c.get_nick() << " -------------  "<< users[i]->get_nick() << std::endl ;
-            if (users[i] != &c)
-                send_msg(*users[i], ":" + c.get_nick() + "!" + c.get_user() + "@host JOIN :" + channel_name + "\r\n");
-        }
     }
 }

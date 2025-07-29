@@ -88,7 +88,7 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	}
 	else if (cmd[0] == "USER")
 	{
-		if (cmd.size() < 5 || cmd[4].empty() || cmd[4][0] != ':' || !check_realname(cmd[4]))
+		if (cmd.size() < 5)
 		{
 			send_msg(c, "461 * USER :Syntax error\r\n");
 			return;
@@ -149,10 +149,13 @@ void Server::execute_cmd(Client &c, std::vector<std::string> cmdList)
 	// std::cout << cmd << std::endl;
 	cmd = up(cmd);
 	cmdList[0] = up(cmdList[0]);
-	// std::cout << cmd << std::endl;
+	std::cout << cmd << std::endl;
 	
 
 	static int i;
+	for(int i;i < cmdList.size() ; i++){
+		std::cout << cmdList[i] + "|";
+	}
 	if(cmd == "LOG")
 	{
 		i++;
