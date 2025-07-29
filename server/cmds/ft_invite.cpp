@@ -8,7 +8,7 @@ void Server::ft_invite(std::vector<std::string> cmds, Server* server, Client &c)
     }
     std::string targetNick = cmds[1];
     std::string channelName = cmds[2];
-    if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&')) {
+    if (channelName.empty() || (channelName[0] != '#')) {
         send_msg(c, ERR_BADCHANMASK(channelName));
         return;
     }
