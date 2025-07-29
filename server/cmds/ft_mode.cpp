@@ -6,6 +6,10 @@ void Channel::removeFromAdmin(Client* client) {
     admins.erase(std::remove(admins.begin(), admins.end(), client), admins.end());
 }
 
+time_t Channel::getCreationTime() const {
+    return creationTime;
+}
+
 void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
     if (cmds.size() < 2) {
         send_msg(c, ERR_NEEDMOREPARAMS(std::string("MODE")));
@@ -33,6 +37,22 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
         return;
     }
     if (cmds.size() < 3) {
+        if(!channel->getKey().empty() || channel->getUserLimit() > 0 || channel->isInviteOnly() || channel->isTopicRestricted()) {
+            std::ostringstream oss;
+            oss << channel->getCreationTime();
+            std::string modes = "+";
+            if (channel->isInviteOnly()) modes += "i";
+            if (channel->isTopicRestricted()) modes += "t";
+            if (!channel->getKey().empty()){
+                 modes += "k";
+                 
+                }
+            if (channel->getUserLimit() > 0) modes += "l";
+            send_msg(c, RPL_CHANNELMODEIS(c.get_nick(), c.get_user(),"localhost",channelName,modes,""));
+            send_msg(c, RPL_CREATIONTIME(c.get_nick(), c.get_user(),"localhost",channelName, oss.str()));
+            // send_msg(c, RPL_UMODEIS(c.get_nick(), channelName, modes, c.get_nick()));
+        } 
+        // If no mode is specified, return the current modes
         return;
     }
     bool isOperator = false;
@@ -148,7 +168,8 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
                 }
                 break;
             default:
-                send_msg(c, ERR_UNKNOWNMODE(c.get_nick(), channelName, std::string(1, mode)));
+                // send_msg(c, ERR_UNKNOWNMODE(c.get_nick(), channelName, std::string(1, mode)));
+
                 return;
         }
     }

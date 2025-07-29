@@ -1,8 +1,10 @@
 #include "../headers/channel.hpp"
 
-// Constructeur : initialise le canal avec un nom, sujet vide, pas de clé, pas de limite, pas d'invite-only
+
 Channel::Channel(const std::string &name)
-    : name(name), topic(""), key(""), userLimit(0), inviteOnly(false), topicRestriction(false) {}
+    : name(name), topic(""), key(""), userLimit(0), inviteOnly(false), topicRestriction(false) {
+    creationTime = time(NULL);
+    }
 
 // Récupère le nom du canal
 std::string Channel::getName() const { return name; }

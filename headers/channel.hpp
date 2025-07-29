@@ -15,7 +15,9 @@ private:
     std::vector<Client*> users;
     std::vector<Client*> admins;
     std::set<Client*> invites;
-    std::set<std::string> banMasks;
+    // std::set<std::string> banMasks;
+
+    time_t creationTime; // Time when the channel was created
     std::string key; // Channel password
     int userLimit;
     bool inviteOnly;
@@ -24,6 +26,9 @@ private:
 public:
     // void checkAdmin(Channel &c);
     void removeFromAdmin(Client* client);
+    time_t getCreationTime() const;
+    void addMode(const std::string& mode);
+    std::vector<std::string>& getModes();
     Channel(const std::string &name);
     std::string getName() const;
     std::string getTopic() const;

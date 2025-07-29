@@ -12,3 +12,6 @@
 :silver.libera.chat 421 Guest4587 v :Unknown command
 
 join #h1,#h2,#h3 2,,3
+
+ERR_UMODEUNKNOWNFLAG (501) 
+  "<client> :Unknown MODE flag"

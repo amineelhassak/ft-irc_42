@@ -41,6 +41,8 @@
 #define ERR_PASSWDMISMATCH(target)						PREFIX "464 " + target +":Password incorrect" POSTFIX
 #define ERR_ALREADYREGISTRED(target)					PREFIX "462 " + target +":You may not reregister" POSTFIX
 #define ERR_NOTREGISTERED								"Error: You are not registered."
+#define RPL_CREATIONTIME(client, user, ipadd, channel, creationtime) (":" + client + "!" + user + "@" + ipadd + " 329 " + client + " " + channel + " " + creationtime + POSTFIX)
+
 #define ERR_CHANNELISFULL(client, channel)				PREFIX " 471 " + client + " " + channel + " :Cannot join channel (+l)" POSTFIX
 #define ERR_INVITEONLYCHAN(client, channel)				PREFIX " 473 " + client + " " + channel + " :Cannot join channel (+i)" POSTFIX
 #define ERR_BADCHANNELKEY(client, channel)				PREFIX " 475 " + client + " " + channel + " :Cannot join channel (+k)" POSTFIX
@@ -48,7 +50,6 @@
 #define ERR_BADCHANMASK(channel)						PREFIX " 476 " + channel + " :Bad Channel Mask" POSTFIX
 #define ERR_NEEDMODEPARM(channelname, mode)				(std::string(": 696 ") + channelname + " * You must specify a parameter for the key mode. " + mode + POSTFIX)
 #define ERR_INVALIDMODEPARM(channelname, mode)			(std::string(": 696 ") + channelname + " Invalid mode parameter. " + mode + POSTFIX)
-#define ERR_UNKNOWNMODE(nickname, channelname, mode)	(std::string(": 472 ") + nickname + " " + channelname + " " + mode + " :is not a recognised channel mode" + POSTFIX)
 #define ERR_INCORPASS(nickname)							(": 464 " + nickname + " :Password incorrect !" + POSTFIX )
 
 #define ERR_NORECIPIENT(command)						PREFIX "411 " + command + " :No recipient given" POSTFIX
@@ -72,5 +73,9 @@
 #define RPL_INVITING(nickname, targnick, targchan) 	 	": 341 " + nickname + " " + targnick + " " + targchan + POSTFIX
 #define RPL_CHANGEMODE(hostname, channelname, mode)		(":" + hostname + " MODE " + channelname + " " + mode + POSTFIX)
 #define RPL_UMODEIS(hostname, channelname, mode, user)	":" + hostname + " MODE " + channelname + " " + mode + " " + user + POSTFIX
+#define RPL_CHANNELMODEIS(client, user, ipadd, channel, modestring, modeargs) \
+    (":" + client + "!" + user + "@" + ipadd + " 324 " + client + " " + channel + " " + modestring + " " + modeargs + POSTFIX)
+
+// #define RPL_UMODEIS(client, usermodes) (":" + client + " 221 " + client + " " + usermodes + POSTFIX)
 
 #endif
