@@ -1,17 +1,9 @@
-:Guest4587!~a@197.230.30.146 JOIN #a
-:silver.libera.chat 353 Guest4587 = #a :Guest4587 bg @ChanServ
-:silver.libera.chat 366 Guest4587 #a :End of /NAMES list.
-
-#define RPL_NAMREPLY(sender, channel, users)    		PREFIX "353 " + sender + " = " + channel + " :" + users + POSTFIX
-#define RPL_ENDOFNAMES(sender, channel)        			PREFIX "366 " + sender + " " + channel + " :End of /NAMES list." POSTFIX
-
-
-
+➜  ft-irc_42 git:(master) ✗ nc localhost 6662
+USER b 0 * :b
+nick b
+:irc.com 001 b :Welcome to the Internet Relay Network b!b@irc.com
+:irc.com 002 b :Your host is irc.com, running version 1.0
+:irc.com 003 b :This server was created Wed Jul 30 2025 13:31:46
+:irc.com 004 b irc.com 1.0 i it
 
 
-:silver.libera.chat 421 Guest4587 v :Unknown command
-
-join #h1,#h2,#h3 2,,3
-
-ERR_UMODEUNKNOWNFLAG (501) 
-  "<client> :Unknown MODE flag"

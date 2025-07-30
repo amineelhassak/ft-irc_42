@@ -49,14 +49,14 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
                  
                 }
             if (channel->getUserLimit() > 0) modes += "l";
-            send_msg(c, RPL_CHANNELMODEIS(c.get_nick(), c.get_user(),"localhost",channelName,modes,""));
-            send_msg(c, RPL_CREATIONTIME(c.get_nick(), c.get_user(),"localhost",channelName, oss.str()));
+            send_msg(c, RPL_CHANNELMODEIS(c.get_nick(), c.get_user(),c.get_hostname(),channelName,modes,""));
+            send_msg(c, RPL_CREATIONTIME(c.get_nick(), c.get_user(),c.get_hostname(),channelName, oss.str()));
             // send_msg(c, RPL_UMODEIS(c.get_nick(), channelName, modes, c.get_nick()));
         } 
         else
         {
-            send_msg(c, RPL_CHANNELMODEIS(c.get_nick(), c.get_user(),"localhost",channelName,"+",""));
-            send_msg(c, RPL_CREATIONTIME(c.get_nick(), c.get_user(),"localhost",channelName, oss.str()));
+            send_msg(c, RPL_CHANNELMODEIS(c.get_nick(), c.get_user(),c.get_hostname(),channelName,"+",""));
+            send_msg(c, RPL_CREATIONTIME(c.get_nick(), c.get_user(),c.get_hostname(),channelName, oss.str()));
         }
         // If no mode is specified, return the current modes
         return;

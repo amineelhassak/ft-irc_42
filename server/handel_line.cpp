@@ -94,6 +94,8 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 		}
 		std::string user = cmd[1];
 		std::string hostname = cmd[2];
+		std::cout << "---------------" <<std::endl;
+		std::cout << "hostname: " << hostname << std::endl;
 		std::string servername = cmd[3];
 		std::string realname;
 		for (size_t i = 4; i < cmd.size(); ++i)
