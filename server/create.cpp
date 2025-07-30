@@ -205,13 +205,11 @@ void    Server::init_socket()
 					read_size = recv(poll_fds[i].fd, buff, sizeof(buff), 0);
 					if (read_size <= 0)
 					{
+						std::cout << "kicking <" << clients[poll_fds[i].fd].get_nick() << "> from all channels" << std::endl;
+						leave_channels(clients[poll_fds[i].fd]);
 						close(poll_fds[i].fd);
 						poll_fds.erase(poll_fds.begin() + i);
 						--i;
-						// remove the client from map 
-						// std::map<int, Client>clients;
-
-						// function to remove it form all channels 
 						continue;
 					}
 					handle_buff_line(clients[poll_fds[i].fd], buff);

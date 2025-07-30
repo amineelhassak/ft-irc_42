@@ -58,6 +58,7 @@ class Server
 	size_t size() const ;
     Client* getUser(size_t i);
     void addAdmin(Client* client);
+	void leave_channels(Client &c);
 };
 
 std::vector<std::string> splitByComma(const std::string &input);
