@@ -5,6 +5,8 @@
 #include <vector>
 #include <cstdlib>
 #include "channel.hpp"
+#include <algorithm>
+
 
 //  #include "../headers/messages.hpp"
 

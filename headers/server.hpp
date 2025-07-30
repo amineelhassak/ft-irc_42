@@ -19,7 +19,7 @@
 #include <arpa/inet.h>
 #include <random>
 #include "message.hpp"
-
+#include <cstring>
 class Server
 {
 	private:
