@@ -37,9 +37,10 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
         return;
     }
     if (cmds.size() < 3) {
+        std::ostringstream oss;
+        oss << channel->getCreationTime();
         if(!channel->getKey().empty() || channel->getUserLimit() > 0 || channel->isInviteOnly() || channel->isTopicRestricted()) {
-            std::ostringstream oss;
-            oss << channel->getCreationTime();
+        std::cout << "ahah ana kayn" << std::endl;
             std::string modes = "+";
             if (channel->isInviteOnly()) modes += "i";
             if (channel->isTopicRestricted()) modes += "t";
@@ -52,6 +53,11 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
             send_msg(c, RPL_CREATIONTIME(c.get_nick(), c.get_user(),"localhost",channelName, oss.str()));
             // send_msg(c, RPL_UMODEIS(c.get_nick(), channelName, modes, c.get_nick()));
         } 
+        else
+        {
+            send_msg(c, RPL_CHANNELMODEIS(c.get_nick(), c.get_user(),"localhost",channelName,"+",""));
+            send_msg(c, RPL_CREATIONTIME(c.get_nick(), c.get_user(),"localhost",channelName, oss.str()));
+        }
         // If no mode is specified, return the current modes
         return;
     }
