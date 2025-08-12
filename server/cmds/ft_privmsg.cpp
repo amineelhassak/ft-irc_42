@@ -1,6 +1,6 @@
 #include "../../headers/server.hpp"
 
-void Server::ft_privmsg(std::vector<std::string> cmds, Server* server, Client& c)
+void Server::ft_privmsg(std::vector<std::string> cmds, Client& c)
 {
     if (cmds.size() < 2) {
         send_msg(c, ERR_NORECIPIENT(std::string("PRIVMSG")));

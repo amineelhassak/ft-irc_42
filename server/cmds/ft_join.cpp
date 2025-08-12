@@ -1,7 +1,7 @@
 #include "../../headers/server.hpp"
 
 
-void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
+void Server::ft_join(std::vector<std::string> cmds, Client &c)
 {
 	if (cmds.size() < 2) {
 		 send_msg(c, ERR_NEEDMOREPARAMS("JOIN"));
@@ -80,7 +80,7 @@ void Server::ft_join(std::vector<std::string> cmds, Server *server, Client &c)
             names_list += users[j]->get_nick() + " ";
         }
         std::cout << "User joined" << std::endl;
-        for (int i = 0; i < users.size(); i++)
+        for (size_t i = 0; i < users.size(); i++)
         {
             send_msg(*users[i], ":" + c.get_nick() + "!" + c.get_user() + "@host JOIN :" + channel_name + "\r\n");
         }

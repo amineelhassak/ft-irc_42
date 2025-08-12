@@ -2,7 +2,7 @@ NAME = ircserv
 
 CC = c++
 
-FLAGS =  -fsanitize=address #-Wall -Werror -Wextra
+FLAGS =  -fsanitize=address -Wall -Werror -Wextra
 
 SRC = src/main.cpp src/parse.cpp server/server.cpp server/create.cpp client/client.cpp client/Channel.cpp \
 	server/cmds/bot.cpp server/cmds/ft_invite.cpp server/cmds/ft_kick.cpp server/cmds/ft_privmsg.cpp \

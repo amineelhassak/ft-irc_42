@@ -1,7 +1,7 @@
 #include "../../headers/server.hpp"
 
 
-void Server::ft_topic(std::vector<std::string> cmds, Server* server, Client &c) {
+void Server::ft_topic(std::vector<std::string> cmds, Client &c) {
     if (cmds.size() < 2) {
         send_msg(c, ERR_NEEDMOREPARAMS(std::string("TOPIC")));
         return;

@@ -2,7 +2,7 @@
 
 bool nick_exist (std::map<int, Client> clients, std::string nick)
 {
-	for (int i =0; i < clients.size(); i++)
+	for (size_t i =0; i < clients.size(); i++)
 	{
 		if (clients[i].get_nick() == nick)
 			return true;
@@ -13,8 +13,6 @@ bool nick_exist (std::map<int, Client> clients, std::string nick)
 bool	check_realname(std::string realname)
 {
 	if (realname.length() < 2)
-		return (false);
-	if (!std::isalnum(realname[1]))
 		return (false);
 	return true;
 }
@@ -28,11 +26,6 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 			send_msg(c, "461 * PASS :Syntax error\r\n");
 			return;
 		}
-		if (c.get_has_pass())
-		{
-			send_msg(c, "462 * PASS :You may not reregister\r\n");
-			return;
-		}
 		std::string	pass;
 		pass = cmd[1];
 		if (pass.empty())
@@ -40,14 +33,19 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 			send_msg(c, "461 * PASS :Not enough parameters\r\n");
 			return;
 		}
-		if (c.is_registered())
-		{
-			send_msg(c, "462 * PASS :You may not reregister\r\n");
-			return;
-		}
 		if (password != pass)
 		{
 			send_msg(c, "464 * PASS :Password incorrect\r\n");
+			return;
+		}
+		if (c.get_has_pass())
+		{
+			send_msg(c, "462 * PASS :You may not reregister1\r\n");
+			return;
+		}
+		if (c.is_registered())
+		{
+			send_msg(c, "462 * PASS :You may not reregister2\r\n");
 			return;
 		}
 		c.set_pass(pass);
@@ -92,6 +90,11 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	}
 	else if (cmd[0] == "USER")
 	{
+		if (cmd.size() < 5 || cmd[4].empty() || cmd[4][0] != ':' || !check_realname(cmd[4]))
+		{
+			send_msg(c, "461 * USER :Syntax error\r\n");
+			return;
+		}
 		if(!c.get_has_pass())
 		{
 			send_msg(c, "ERROR :You must enter the password first\r\n");
@@ -104,8 +107,6 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 		}
 		std::string user = cmd[1];
 		std::string hostname = cmd[2];
-		std::cout << "---------------" <<std::endl;
-		std::cout << "hostname: " << hostname << std::endl;
 		std::string servername = cmd[3];
 		std::string realname;
 		for (size_t i = 4; i < cmd.size(); ++i)
@@ -141,7 +142,7 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 std::string up(std::string in)
 {
     std::string out(in.size(), ' ');
-    for (int i = 0; i < in.size(); i++)
+    for (size_t i = 0; i < in.size(); i++)
     {
         out[i] = toupper(in[i]);
     }
@@ -155,13 +156,9 @@ void Server::execute_cmd(Client &c, std::vector<std::string> cmdList)
 	std::string cmd = cmdList[0];
 	cmd = up(cmd);
 	cmdList[0] = up(cmdList[0]);
-	std::cout << cmd << std::endl;
 	
 
 	static int i;
-	for(int i;i < cmdList.size() ; i++){
-		std::cout << cmdList[i] + "|";
-	}
 	if(cmd == "LOG")
 	{
 		i++;
@@ -193,27 +190,27 @@ void Server::execute_cmd(Client &c, std::vector<std::string> cmdList)
 	}
 	else if (cmd == "JOIN")
 	{
-		ft_join(cmdList, this, c);
+		ft_join(cmdList,  c);
 	}
 	else if (cmd == "MODE")
 	{
-		ft_mode(cmdList, this, c);
+		ft_mode(cmdList,  c);
 	}
 	else if (cmd == "INVITE")
 	{
-		ft_invite(cmdList, this, c);
+		ft_invite(cmdList, c);
 	}
 	else if (cmd == "KICK")
 	{
-		ft_kick(cmdList, this, c);
+		ft_kick(cmdList,  c);
 	}
 	else if (cmd == "PRIVMSG")
 	{
-		ft_privmsg(cmdList, this, c);
+		ft_privmsg(cmdList,  c);
 	}
 	else if (cmd == "TOPIC")
 	{
-		ft_topic(cmdList, this, c);
+		ft_topic(cmdList,  c);
 	}
 	else if (cmd == "HELP")
 	{

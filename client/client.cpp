@@ -9,6 +9,7 @@ Client::Client(int fd)
 	this->fd = fd;
 	has_nick = false;
 	has_user = false;
+	has_pass = false;
 	registered = false;
 }
 

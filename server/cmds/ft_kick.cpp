@@ -6,7 +6,7 @@
 //         c->admins->push_back(c->users[0])
 // }
 
-void Server::ft_kick(std::vector<std::string> cmds, Server* server, Client& c) {
+void Server::ft_kick(std::vector<std::string> cmds,  Client& c) {
     if (cmds.size() < 3) {
         send_msg(c, ERR_NEEDMOREPARAMS(std::string("KICK")));
         return;

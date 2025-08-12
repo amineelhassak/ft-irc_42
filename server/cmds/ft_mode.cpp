@@ -10,7 +10,7 @@ time_t Channel::getCreationTime() const {
     return creationTime;
 }
 
-void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
+void Server::ft_mode(std::vector<std::string> cmds, Client& c) {
     if (cmds.size() < 2) {
         send_msg(c, ERR_NEEDMOREPARAMS(std::string("MODE")));
         return;
@@ -40,7 +40,6 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
         std::ostringstream oss;
         oss << channel->getCreationTime();
         if(!channel->getKey().empty() || channel->getUserLimit() > 0 || channel->isInviteOnly() || channel->isTopicRestricted()) {
-        std::cout << "ahah ana kayn" << std::endl;
             std::string modes = "+";
             if (channel->isInviteOnly()) modes += "i";
             if (channel->isTopicRestricted()) modes += "t";
@@ -154,7 +153,7 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
                         send_msg(c, ERR_NEEDMODEPARM(channelName, "l"));
                         return;
                     }
-                    int limit = std::atoi(cmds[3].c_str());
+                    size_t limit = std::atoi(cmds[3].c_str());
                     if (limit <= 0) {
                         send_msg(c, ERR_INVALIDMODEPARM(channelName, "l"));
                         return;

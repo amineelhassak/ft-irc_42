@@ -8,7 +8,7 @@ Server::Server(int port, std::string password)
 }
 
 void Server::leave_channels(Client &c){
-    for (int i = 0; i < allChannels.size(); i++)
+    for (size_t i = 0; i < allChannels.size(); i++)
     {
         if (allChannels[i].hasClient(&c) == false)
             continue;
@@ -23,7 +23,7 @@ void Server::leave_channels(Client &c){
         }
     }
     std::string msg = ":" + c.get_nick() + "!" + c.get_user() + "@" + c.get_hostname() + " QUIT :LEAVING\r\n";
-    for (int i = 0; i < clients.size(); i++)
+    for (size_t i = 0; i < clients.size(); i++)
     {
         if (clients[i].get_nick() != c.get_nick())
             send_msg(clients[i], msg);

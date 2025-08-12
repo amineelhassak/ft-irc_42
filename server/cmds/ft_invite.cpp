@@ -1,7 +1,7 @@
 #include "../../headers/server.hpp"
 
 
-void Server::ft_invite(std::vector<std::string> cmds, Server* server, Client &c) {
+void Server::ft_invite(std::vector<std::string> cmds, Client &c) {
     if (cmds.size() < 3) {
         send_msg(c, ERR_NEEDMOREPARAMS(std::string("INVITE")));
         return;
