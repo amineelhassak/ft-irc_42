@@ -55,6 +55,11 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	}
 	else if (cmd[0] == "NICK")
 	{
+		if(!c.get_has_pass())
+		{
+			send_msg(c, "ERROR :You must enter the password first\r\n");
+			return;
+		}
 		if (cmd.size() != 2)
 		{
 			send_msg(c, "461 * NICK :Syntax error\r\n");
@@ -87,6 +92,11 @@ void Server::auth(Client &c, std::vector<std::string> cmd)
 	}
 	else if (cmd[0] == "USER")
 	{
+		if(!c.get_has_pass())
+		{
+			send_msg(c, "ERROR :You must enter the password first\r\n");
+			return;
+		}
 		if (cmd.size() < 5)
 		{
 			send_msg(c, "461 * USER :Syntax error\r\n");
