@@ -2,7 +2,7 @@
 
 
 Channel::Channel(const std::string &name)
-    : name(name), topic(""), key(""), userLimit(0), inviteOnly(false), topicRestriction(false) {
+    : name(name), topic(""), key(""), userLimit(0), inviteOnly(false), topicRestriction(true) {
     creationTime = time(NULL);
     }
 

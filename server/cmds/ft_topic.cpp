@@ -36,6 +36,11 @@ void Server::ft_topic(std::vector<std::string> cmds, Server* server, Client &c) 
         }
         return;
     }
+    if(!channel->isTopicRestricted())
+    {
+        send_msg(c, "u cannot change topic on this channel\r\n");
+        return;
+    }
     std::string newTopic;
     for (size_t i = 2; i < cmds.size(); ++i) {
         if (i > 2) newTopic += " ";

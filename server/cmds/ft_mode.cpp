@@ -174,8 +174,7 @@ void Server::ft_mode(std::vector<std::string> cmds, Server* server, Client& c) {
                 }
                 break;
             default:
-                // send_msg(c, ERR_UNKNOWNMODE(c.get_nick(), channelName, std::string(1, mode)));
-
+                send_msg(c,":irc.com 472 " + c.get_nick() + " " + std::string(1, mode) + " :is unknown mode char to me");
                 return;
         }
     }
