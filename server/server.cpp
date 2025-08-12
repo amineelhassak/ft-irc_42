@@ -10,15 +10,21 @@ Server::Server(int port, std::string password)
 void Server::leave_channels(Client &c){
     for (int i = 0; i < allChannels.size(); i++)
     {
+        if (allChannels[i].hasClient(&c) == false)
+            continue;
         allChannels[i].removeFromAdmin(&c);
         allChannels[i].removeFromChannel(&c);
+        if (allChannels[i].getAdmins().size() == 0 && allChannels[i].getUsers().size())
+        {
+            Client *top = allChannels[i].getUsers()[0];
+            if (!top)
+                continue;
+            allChannels[i].addToAdmin(top);
+        }
     }
-    std::cout << "hostname: " << c.get_hostname() << std::endl;
-    std::string hot = "localhost";
-    std::string msg = ":" + c.get_nick() + "!" + c.get_user() + "@" + hot + " QUIT :LEAVING\r\n";
+    std::string msg = ":" + c.get_nick() + "!" + c.get_user() + "@" + c.get_hostname() + " QUIT :LEAVING\r\n";
     for (int i = 0; i < clients.size(); i++)
     {
-        //:username!user@host QUIT :<quit message>
         if (clients[i].get_nick() != c.get_nick())
             send_msg(clients[i], msg);
     }
